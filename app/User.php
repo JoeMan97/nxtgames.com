@@ -8,6 +8,10 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    public function roles(){
+        return $this->belongsToMany('App\Role');
+    }
+
     use Notifiable;
 
     /**
