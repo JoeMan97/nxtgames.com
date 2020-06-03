@@ -17,3 +17,28 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// GamesController
+    Route::get('/games', 'GameController@index');
+
+    Route::get('/games/game_id/{id}', 'GameController@show');
+
+    Route::post('/games', 'GameController@store');
+
+// ScoresController
+    Route::post('/scores', 'ScoreController@store');
+
+    Route::get('/scores/game_id/{game_id}/user_id/{user_id}', 'ScoreController@showBest');
+
+    Route::get('/scores/game_id/{game_id}', 'ScoreController@showBestGlobal');
+
+// NewController
+    Route::get('/news', 'NewController@index');
+
+    Route::get('/news/new_id/{id}', 'NewController@show');
+
+    Route::post('/news', 'NewController@store');
+
+    Route::put('/news/new_id/{id}', 'NewController@update');
+
+    Route::delete('/news/new_id/{id}', 'NewController@destroy');

@@ -4,11 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Score extends Model
+class Neww extends Model
 {
+    protected $table = 'news';
+
     protected $fillable = [
-        'score',
-        'game_id',
+        'title',
+        'body',
         'user_id'
     ];
 }
