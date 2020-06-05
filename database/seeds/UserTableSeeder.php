@@ -22,7 +22,7 @@ class UserTableSeeder extends Seeder
         $user->name = "José Carrillo";
         $user->email = "joseemanueelct@gmail.com";
         $user->password = bcrypt('hola1234');
-        $user->picture = public_path().'/images/'.'default_user.png';
+        $user->picture = "/images/default_user.png";
         $user->save();
         $user->roles()->attach($role_user);
         $user->roles()->attach($role_admin);

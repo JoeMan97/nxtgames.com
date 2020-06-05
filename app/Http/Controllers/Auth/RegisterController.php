@@ -54,6 +54,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            # validaciones agregadas a la imagen de perfil
+            'picture' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,svg', 'max:5000']
         ]);
     }
 
@@ -66,12 +68,27 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            //'picture' => $data['picture']
-        ]);
+        $user = null;
+
+        if (request()->has('picture')) {
+            $picture = request()->file('picture');
+            $picture_name = time() . '.' . $picture->getClientOriginalExtension();
+            $picture_path = public_path('/images/');
+            $picture->move($picture_path, $picture_name);
+
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'picture' => '/images/' . $picture_name,
+            ]);
+        } else {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+        }
 
         // Se le asigna el rol de usuario a la cuenta recien creada.
         $role_user = Role::where('name','Usuario')->first();
