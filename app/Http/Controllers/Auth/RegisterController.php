@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use App\Role;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -57,17 +58,25 @@ class RegisterController extends Controller
     }
 
     /**
-     * Create a new user instance after a valid registration.
-     *
+     * Crea un nuevo registro en la tabla user despues de un valido registro.
+     * Ademas crea un nuevo registro en la tabla role_user. El usuario tendra asignado el rol usuario.
+     * 
      * @param  array  $data
      * @return \App\User
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            //'picture' => $data['picture']
         ]);
+
+        // Se le asigna el rol de usuario a la cuenta recien creada.
+        $role_user = Role::where('name','Usuario')->first();
+        $user->roles()->attach($role_user);
+
+        return $user;
     }
 }
