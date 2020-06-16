@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <example-component></example-component>
+            <h1>Configuracion</h1>
 
         </div>
     </div></div>

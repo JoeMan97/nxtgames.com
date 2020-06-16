@@ -43,10 +43,10 @@
                                 Juegos
                             </a>
                             <div class="collapse" id="collapseGames">
-                                <a class="dropdown-item" href="#">Conecta 4</a>
-                                <a class="dropdown-item" href="#">El juego de la vida</a>
-                                <a class="dropdown-item" href="#">Snake</a>
-                                <a class="dropdown-item" href="#">Tetris</a>
+                            <a class="dropdown-item" href="{{ route('connect-4') }}">Conecta 4</a>
+                                <a class="dropdown-item" href="{{ route('the-game-of-life') }}">El juego de la vida</a>
+                                <a class="dropdown-item" href="{{ route('snake') }}">Snake</a>
+                                <a class="dropdown-item" href="{{ route('tetris') }}">Tetris</a>
                             </div>
                         </li>
                         
@@ -56,10 +56,10 @@
                                 Juegos
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbar-dropdown-1">
-                                <a class="dropdown-item" href="#">Conecta 4</a>
-                                <a class="dropdown-item" href="#">El juego de la vida</a>
-                                <a class="dropdown-item" href="#">Snake</a>
-                                <a class="dropdown-item" href="#">Tetris</a>
+                                <a class="dropdown-item" href="{{ route('connect-4') }}">Conecta 4</a>
+                                <a class="dropdown-item" href="{{ route('the-game-of-life') }}">El juego de la vida</a>
+                                <a class="dropdown-item" href="{{ route('snake') }}">Snake</a>
+                                <a class="dropdown-item" href="{{ route('tetris') }}">Tetris</a>
                             </div>
                         </li>
                         
@@ -70,8 +70,8 @@
                                 Puntuaciones
                             </a>
                             <div class="collapse" id="collapseScores">
-                                <a class="dropdown-item" href="#">Tus Puntuaciones</a>
-                                <a class="dropdown-item" href="#">Puntuaciones Globales</a>
+                                <a class="dropdown-item" href="{{ route('global-scores') }}">Tus Puntuaciones</a>
+                                <a class="dropdown-item" href="{{ route('user-scores') }}">Puntuaciones Globales</a>
                             </div>
                         </li>
 
@@ -81,14 +81,14 @@
                                 Puntuaciones
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbar-dropdown-2">
-                                <a class="dropdown-item" href="#">Tus Puntuaciones</a>
-                                <a class="dropdown-item" href="#">Puntuaciones Globales</a>
+                                <a class="dropdown-item" href="{{ route('global-scores') }}">Tus Puntuaciones</a>
+                                <a class="dropdown-item" href="{{ route('user-scores') }}">Puntuaciones Globales</a>
                             </div>
                         </li>
                         
                         <!-- li Noticias -->
                         <li>
-                            <a class="nav-link" href="#">Noticias</a>
+                            <a class="nav-link" href="{{ route('news') }}">Noticias</a>
                         </li>
                     </ul>
 
