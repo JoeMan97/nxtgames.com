@@ -14,8 +14,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::view('/configuracion', 'configuration')->name('configuration');
 
-Route::view('/juegos/conecta-4', 'games',['game' => ''])->name('connect-4');
-Route::view('/juegos/el-juego-de-la-vida', 'games',['game' => ''])->name('the-game-of-life');
+Route::view('/juegos/conecta-4', 'games',['game' => 'connect-4'])->name('connect-4');
+Route::view('/juegos/el-juego-de-la-vida', 'games',['game' => 'the-game-of-life'])->name('the-game-of-life');
 Route::view('/juegos/snake', 'games',['game' => 'snake'])->name('snake');
 Route::view('/juegos/tetris', 'games',['game' => 'tetris'])->name('tetris');
 

@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <h1>Juegos</h1>
+            <select-game game="{{ $game }}"></select-game>
 
         </div>
     </div></div>
