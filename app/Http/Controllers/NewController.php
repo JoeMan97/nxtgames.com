@@ -27,7 +27,7 @@ class NewController extends Controller
     {
         $neww = Neww::Create($request->all());
 
-        return response()->json($new, 201); // 201: Created
+        return response()->json($neww, 201); // 201: Created
     }
 
     /**
@@ -38,7 +38,7 @@ class NewController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Neww::find($id), 200); // 200: OK
+        return response()->json(Neww::findOrFail($id), 200); // 200: OK
     }
 
     /**
@@ -64,6 +64,6 @@ class NewController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json(Neww::findOrFail($id)->delete(), 200); // 200: OK 
+        return response()->json(Neww::findOrFail($id)->delete(), 204); // 204: No Conent 
     }
 }
