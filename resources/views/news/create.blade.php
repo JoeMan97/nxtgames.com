@@ -3,9 +3,11 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             
-            <h1>Noticias</h1>
+            <h1>Redactar Noticia</h1>
+
+            <write-new></write-new>
 
         </div>
     </div></div>
