@@ -2096,7 +2096,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     // Elimina la noticia
     deleteNew: function deleteNew() {
-      axios["delete"](_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["DELETE_NEW"] + this.newId).then(function (response) {
+      axios["delete"](_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['DELETE_NEW'] + this.newId).then(function (response) {
         // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
         window.location.href = "/noticias/" + "eliminada";
       })["catch"](function (errors) {
@@ -2161,7 +2161,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     // Obtiene la noticia
-    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["GET_NEW"] + this.newId).then(function (response) {
+    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['GET_NEW'] + this.newId).then(function (response) {
       return _this.neww = response.data, // Al obtenerla se oculta el spinner
       _this.loading = false;
     });
@@ -2244,7 +2244,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     // Obtiene todas las noticias
-    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["GET_NEWS"]).then(function (response) {
+    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['GET_NEWS']).then(function (response) {
       return _this.newws = response.data, // Al obtenerlas se oculta el spinner
       _this.loading = false;
     });
@@ -2328,7 +2328,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     // Obtiene la noticia
-    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["GET_NEW"] + this.newId).then(function (response) {
+    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['GET_NEW'] + this.newId).then(function (response) {
       return _this.neww = response.data, // Al obtenerla se oculta el spinner
       _this.loading = false;
     })["catch"](function (errors) {
@@ -2381,7 +2381,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     // Envia la noticia
     submitNew: function submitNew() {
-      axios.post(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["POST_NEW"], {
+      axios.post(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['POST_NEW'], {
         user_id: this.userId,
         title: this.neww.title,
         body: this.neww.body

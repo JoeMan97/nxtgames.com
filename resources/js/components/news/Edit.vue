@@ -41,7 +41,7 @@ export default {
     },
     created() {
         // Obtiene la noticia
-        axios.get(apiNewsURLS["GET_NEW"] + this.newId)
+        axios.get(apiNewsURLS['GET_NEW'] + this.newId)
         .then(response => (
             this.neww = response.data,
 

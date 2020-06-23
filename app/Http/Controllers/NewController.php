@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreNewRequest;
+use App\Http\Requests\UpdateNewRequest;
 use App\Neww;
 
 class NewController extends Controller
@@ -23,11 +25,14 @@ class NewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreNewRequest $request)
     {
-        $neww = Neww::Create($request->all());
+        // NOTA: Si se va a probar la API en Postman, es necesario quitar este if
+        if($request->ajax()){ 
+            $neww = Neww::Create($request->validated());
 
-        return response()->json($neww, 201); // 201: Created
+            return response()->json($neww, 201); // 201: Created    
+        }
     }
 
     /**
@@ -48,7 +53,7 @@ class NewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateNewRequest $request, $id)
     {
         $neww = Neww::findOrFail($id);
         $neww->update($request->all());
