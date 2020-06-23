@@ -48,7 +48,7 @@ export default {
     },
     created() {
         // Obtiene todas las noticias
-        axios.get(apiNewsURLS["GET_NEWS"]).then(response => (
+        axios.get(apiNewsURLS['GET_NEWS']).then(response => (
             this.newws = response.data,
 
             // Al obtenerlas se oculta el spinner

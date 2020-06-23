@@ -32,7 +32,7 @@ export default {
     methods: {
         // Envia la noticia
         submitNew() {
-            axios.post(apiNewsURLS["POST_NEW"], {
+            axios.post(apiNewsURLS['POST_NEW'], {
                 user_id: this.userId,
                 title: this.neww.title,
                 body: this.neww.body

@@ -38,7 +38,7 @@ export default {
         // Elimina la noticia
         deleteNew() {
             axios
-            .delete(apiNewsURLS["DELETE_NEW"] + this.newId)
+            .delete(apiNewsURLS['DELETE_NEW'] + this.newId)
             .then(function(response) {
                 // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
                 window.location.href = "/noticias/" + "eliminada";
