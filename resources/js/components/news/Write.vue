@@ -1,16 +1,18 @@
 <!-- Formulario para redactar una noticia -->
 <template>
 
-    <form>
+    <form @submit.prevent="submitNew">
         <div class="form-group">
             <label for="input-title">Título</label>
-            <input class="form-control" type="text" id="title-input" v-model="neww.title">
+            <input v-error="errors.title" class="form-control" type="text" id="title-input" v-model="neww.title">
+            <span v-if="errors.title" class="invalid-feedback" role="alert">{{ errors.title[0] }}</span>
         </div>
         <div class="form-group">
             <label cfor="body-textarea">Contenido</label>
-            <textarea class="form-control" id="body-textarea" rows="14" v-model="neww.body"></textarea>            
+            <textarea v-error="errors.body" class="form-control" id="body-textarea" rows="14" v-model="neww.body"></textarea>            
+            <span v-if="errors.body" class="invalid-feedback" role="alert">{{ errors.body[0] }}</span>
         </div>
-        <button class="btn btn-primary" v-on:click="submitNew()">Publicar</button>
+        <input type="submit" class="btn btn-primary" value="Publicar">
     </form>
 
 </template>
@@ -18,15 +20,23 @@
 import { apiNewsURLS } from '../../constants.js'
 
 export default {
+    props: {
+        // Id del usuario quien redacta la noticia
+        userId: {
+            required: true
+        }
+    },
     data() {
         return {
-            // variable hardcodeada para definir el id del usuario que redacta la noticia
-            userId: 1,
             // Objeto para definir los atributos de la noticia
             neww: {
                 title: null,
                 body: null
             },
+            // Variable para almacenar posibles errores al enviar la noticia
+            errors: [],
+            // Variable para saber si ya se intento enviar la noticia
+            submitAttemp: false
         }
     },
     methods: {
@@ -41,9 +51,27 @@ export default {
                 // Redirije a la vista donde estan todas las noticias y envia el estatus de "publicada"
                 window.location.href = "/noticias/" + "publicada";
             })
-            .catch(function(errors) {
-                console.log(errors);
+            .catch(errors => {
+                if (errors.response.status == 422) {
+                    this.errors = errors.response.data.errors;
+                    this.submitAttemp = true;
+                }
             });
+        }
+    },
+    directives: {
+        // Cambia el estilo de los inputs segun si hay errores
+        error: {
+            componentUpdated(el, binding, vnode) {
+                // Si hay un error y ya se intento enviar la noticia...
+                if (binding.value && vnode.context.submitAttemp) {
+                    el.classList.add("is-invalid");
+                    el.classList.remove("is-valid");
+                } else if (vnode.context.submitAttemp) {
+                    el.classList.add("is-valid");
+                    el.classList.remove("is-invalid");
+                }
+            }
         }
     }
 }

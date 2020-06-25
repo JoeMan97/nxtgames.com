@@ -3,11 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-8">
             
-            <h1>Redactar Noticia</h1>
-
-            <write-new user-id="{{ Auth::user()->id }}"></write-new>
+            <select-game game="{{ $game }}"></select-game>
 
         </div>
     </div></div>

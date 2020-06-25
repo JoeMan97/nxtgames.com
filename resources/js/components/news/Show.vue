@@ -17,6 +17,7 @@
                 <div class="mt-3">
                     <a :href="'/noticias/editar/' + neww.id" class="btn btn-primary mr-2">Editar</a>
                     <button class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">Eliminar</button>
+                    <delete-new v-on:deleteButtonPress="deleteNew()"></delete-new>
                 </div>
             </div>
         </div>
@@ -28,7 +29,6 @@ import { apiNewsURLS } from '../../constants.js'
 
 export default {
     props: {
-        // Id de la noticia a mostrar
         newId: {
             required: true
         }
@@ -56,5 +56,19 @@ export default {
             console.log(errors);
         });
     },
+    methods: {
+        // Elimina la noticia
+        deleteNew() {
+            axios
+            .delete(apiNewsURLS['DELETE_NEW'] + this.newId)
+            .then(function(response) {
+                // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
+                window.location.href = "/noticias/" + "eliminada";
+            })
+            .catch(function(errors) {
+                console.log(errors);
+            });
+        }
+    }
 }
 </script>

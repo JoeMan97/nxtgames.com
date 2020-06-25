@@ -45,8 +45,8 @@
                             <span class="text-small text-info">* not required</span>
                             </label>
 
-                            <div class="col-md-6">
-                                <input id="picture" type="file" class="form-control @error('picture') is-invalid @enderror" name="picture">
+                            <div class="col-md-6 mt-1">
+                                <input id="picture" type="file" class="@error('picture') is-invalid @enderror" name="picture">
 
                                 @error('picture')
                                     <span class="invalid-feedback" role="alert">
@@ -56,7 +56,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mt-n3">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
