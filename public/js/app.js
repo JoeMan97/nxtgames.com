@@ -2126,6 +2126,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2142,7 +2144,10 @@ __webpack_require__.r(__webpack_exports__);
       neww: {
         title: null,
         body: null
-      }
+      },
+      // Arreglo para obtener posibles errores al enviar la noticia
+      errors: [],
+      submitAttemp: false
     };
   },
   created: function created() {
@@ -2157,15 +2162,36 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     // Envia la noticia actualizada
     editNew: function editNew() {
+      var _this2 = this;
+
       axios.put(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['PUT_NEW'] + this.newId, {
         title: this.neww.title,
         body: this.neww.body
       }).then(function (response) {
         // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
         window.location.href = "/noticias/" + "editada";
-      })["catch"](function (errors) {
-        console.log(errors);
+      }) // Obtiene los posibles errores al enviar la noticia
+      ["catch"](function (errors) {
+        if (errors.response.status == 422) {
+          _this2.errors = errors.response.data.errors;
+          _this2.submitAttemp = true;
+        }
       });
+    }
+  },
+  computed: {
+    // Cambian el estilo de los inputs segun si hay errores
+    compClassesTitle: function compClassesTitle() {
+      return {
+        "is-invalid": this.errors.title,
+        "is-valid": !this.errors.title && this.submitAttemp
+      };
+    },
+    compClassesBody: function compClassesBody() {
+      return {
+        "is-invalid": this.errors.body,
+        "is-valid": !this.errors.body && this.submitAttemp
+      };
     }
   }
 });
@@ -2296,6 +2322,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    newId: {
+      required: true
+    }
+  },
   data: function data() {
     return {
       // variable para mostrar y ocultar el spinner
@@ -2306,11 +2337,6 @@ __webpack_require__.r(__webpack_exports__);
         body: null
       }
     };
-  },
-  props: {
-    newId: {
-      required: true
-    }
   },
   created: function created() {
     var _this = this;
@@ -2364,22 +2390,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    // Id del usuario quien redacta la noticia
+    userId: {
+      required: true
+    }
+  },
   data: function data() {
     return {
-      // variable hardcodeada para definir el id del usuario que redacta la noticia
-      userId: 1,
       // Objeto para definir los atributos de la noticia
       neww: {
         title: null,
         body: null
-      }
+      },
+      // Variable para almacenar posibles errores al enviar la noticia
+      errors: [],
+      // Variable para saber si ya se intento enviar la noticia
+      submitAttemp: false
     };
   },
   methods: {
     // Envia la noticia
     submitNew: function submitNew() {
+      var _this = this;
+
       axios.post(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['POST_NEW'], {
         user_id: this.userId,
         title: this.neww.title,
@@ -2388,8 +2426,26 @@ __webpack_require__.r(__webpack_exports__);
         // Redirije a la vista donde estan todas las noticias y envia el estatus de "publicada"
         window.location.href = "/noticias/" + "publicada";
       })["catch"](function (errors) {
-        console.log(errors);
+        if (errors.response.status == 422) {
+          _this.errors = errors.response.data.errors;
+          _this.submitAttemp = true;
+        }
       });
+    }
+  },
+  directives: {
+    // Cambia el estilo de los inputs segun si hay errores
+    error: {
+      componentUpdated: function componentUpdated(el, binding, vnode) {
+        // Si hay un error y ya se intento enviar la noticia...
+        if (binding.value && vnode.context.submitAttemp) {
+          el.classList.add("is-invalid");
+          el.classList.remove("is-valid");
+        } else if (vnode.context.submitAttemp) {
+          el.classList.add("is-valid");
+          el.classList.remove("is-invalid");
+        }
+      }
     }
   }
 });
@@ -38830,74 +38886,95 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _vm.loading
     ? _c("spinner")
-    : _c("form", [
-        _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { for: "input-title" } }, [_vm._v("Título")]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.neww.title,
-                expression: "neww.title"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: { type: "text", id: "title-input" },
-            domProps: { value: _vm.neww.title },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.neww, "title", $event.target.value)
-              }
+    : _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.editNew($event)
             }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group" }, [
-          _c("label", { attrs: { cfor: "body-textarea" } }, [
-            _vm._v("Contenido")
+          }
+        },
+        [
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", { attrs: { for: "input-title" } }, [_vm._v("Título")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.neww.title,
+                  expression: "neww.title"
+                }
+              ],
+              staticClass: "form-control",
+              class: _vm.compClassesTitle,
+              attrs: { type: "text", id: "title-input" },
+              domProps: { value: _vm.neww.title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.neww, "title", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _vm.errors.title
+              ? _c(
+                  "span",
+                  { staticClass: "invalid-feedback", attrs: { role: "alert" } },
+                  [_vm._v(_vm._s(_vm.errors.title[0]))]
+                )
+              : _vm._e()
           ]),
           _vm._v(" "),
-          _c("textarea", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.neww.body,
-                expression: "neww.body"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: { id: "body-textarea", rows: "14" },
-            domProps: { value: _vm.neww.body },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", { attrs: { cfor: "body-textarea" } }, [
+              _vm._v("Contenido")
+            ]),
+            _vm._v(" "),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.neww.body,
+                  expression: "neww.body"
                 }
-                _vm.$set(_vm.neww, "body", $event.target.value)
+              ],
+              staticClass: "form-control",
+              class: _vm.compClassesBody,
+              attrs: { id: "body-textarea", rows: "14" },
+              domProps: { value: _vm.neww.body },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.neww, "body", $event.target.value)
+                }
               }
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
+            }),
+            _vm._v(" "),
+            _vm.errors.body
+              ? _c(
+                  "span",
+                  { staticClass: "invalid-feedback", attrs: { role: "alert" } },
+                  [_vm._v(_vm._s(_vm.errors.body[0]))]
+                )
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          _c("input", {
             staticClass: "btn btn-primary",
-            on: {
-              click: function($event) {
-                return _vm.editNew()
-              }
-            }
-          },
-          [_vm._v("Aceptar")]
-        )
-      ])
+            attrs: { type: "submit", value: "Aceptar" }
+          })
+        ]
+      )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39075,72 +39152,105 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("form", [
-    _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "input-title" } }, [_vm._v("Título")]),
+  return _c(
+    "form",
+    {
+      on: {
+        submit: function($event) {
+          $event.preventDefault()
+          return _vm.submitNew($event)
+        }
+      }
+    },
+    [
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", { attrs: { for: "input-title" } }, [_vm._v("Título")]),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "error",
+              rawName: "v-error",
+              value: _vm.errors.title,
+              expression: "errors.title"
+            },
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.neww.title,
+              expression: "neww.title"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "text", id: "title-input" },
+          domProps: { value: _vm.neww.title },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.neww, "title", $event.target.value)
+            }
+          }
+        }),
+        _vm._v(" "),
+        _vm.errors.title
+          ? _c(
+              "span",
+              { staticClass: "invalid-feedback", attrs: { role: "alert" } },
+              [_vm._v(_vm._s(_vm.errors.title[0]))]
+            )
+          : _vm._e()
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", { attrs: { cfor: "body-textarea" } }, [
+          _vm._v("Contenido")
+        ]),
+        _vm._v(" "),
+        _c("textarea", {
+          directives: [
+            {
+              name: "error",
+              rawName: "v-error",
+              value: _vm.errors.body,
+              expression: "errors.body"
+            },
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.neww.body,
+              expression: "neww.body"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { id: "body-textarea", rows: "14" },
+          domProps: { value: _vm.neww.body },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.neww, "body", $event.target.value)
+            }
+          }
+        }),
+        _vm._v(" "),
+        _vm.errors.body
+          ? _c(
+              "span",
+              { staticClass: "invalid-feedback", attrs: { role: "alert" } },
+              [_vm._v(_vm._s(_vm.errors.body[0]))]
+            )
+          : _vm._e()
+      ]),
       _vm._v(" "),
       _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.neww.title,
-            expression: "neww.title"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: { type: "text", id: "title-input" },
-        domProps: { value: _vm.neww.title },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.$set(_vm.neww, "title", $event.target.value)
-          }
-        }
-      })
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { cfor: "body-textarea" } }, [_vm._v("Contenido")]),
-      _vm._v(" "),
-      _c("textarea", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.neww.body,
-            expression: "neww.body"
-          }
-        ],
-        staticClass: "form-control",
-        attrs: { id: "body-textarea", rows: "14" },
-        domProps: { value: _vm.neww.body },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.$set(_vm.neww, "body", $event.target.value)
-          }
-        }
-      })
-    ]),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
         staticClass: "btn btn-primary",
-        on: {
-          click: function($event) {
-            return _vm.submitNew()
-          }
-        }
-      },
-      [_vm._v("Publicar")]
-    )
-  ])
+        attrs: { type: "submit", value: "Publicar" }
+      })
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

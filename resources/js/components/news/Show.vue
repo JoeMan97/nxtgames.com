@@ -28,6 +28,11 @@
 import { apiNewsURLS } from '../../constants.js'
 
 export default {
+    props: {
+        newId: {
+            required: true
+        }
+    },
     data () {
         return {
             // variable para mostrar y ocultar el spinner
@@ -37,11 +42,6 @@ export default {
                 title: null,
                 body: null
             }
-        }
-    },
-    props: {
-        newId: {
-            required: true
         }
     },
     created() {
