@@ -28,24 +28,9 @@
 import { apiNewsURLS } from '../../constants.js'
 
 export default {
-    props: {
-        // Id de la noticia a eliminar
-        newId: {
-            required: true
-        } 
-    },
     methods: {
-        // Elimina la noticia
         deleteNew() {
-            axios
-            .delete(apiNewsURLS['DELETE_NEW'] + this.newId)
-            .then(function(response) {
-                // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
-                window.location.href = "/noticias/" + "eliminada";
-            })
-            .catch(function(errors) {
-                console.log(errors);
-            });
+            this.$emit('deleteButtonPress');
         }
     }
 }

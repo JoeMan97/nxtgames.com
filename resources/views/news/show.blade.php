@@ -8,7 +8,6 @@
             <h1>Ver Noticia</h1>
 
             <show-new new-id="{{ $id }}"></show-new>
-            <delete-new new-id="{{ $id }}"></delete-new>
 
         </div>
     </div></div>

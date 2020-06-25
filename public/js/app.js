@@ -2087,21 +2087,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    // Id de la noticia a eliminar
-    newId: {
-      required: true
-    }
-  },
   methods: {
-    // Elimina la noticia
     deleteNew: function deleteNew() {
-      axios["delete"](_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['DELETE_NEW'] + this.newId).then(function (response) {
-        // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
-        window.location.href = "/noticias/" + "eliminada";
-      })["catch"](function (errors) {
-        console.log(errors);
-      });
+      this.$emit('deleteButtonPress');
     }
   }
 });
@@ -2169,7 +2157,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     // Envia la noticia actualizada
     editNew: function editNew() {
-      axios.put(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]["PUT_NEW"] + this.newId, {
+      axios.put(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['PUT_NEW'] + this.newId, {
         title: this.neww.title,
         body: this.neww.body
       }).then(function (response) {
@@ -2305,14 +2293,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    // Id de la noticia a mostrar
-    newId: {
-      required: true
-    }
-  },
   data: function data() {
     return {
       // variable para mostrar y ocultar el spinner
@@ -2324,6 +2307,11 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
+  props: {
+    newId: {
+      required: true
+    }
+  },
   created: function created() {
     var _this = this;
 
@@ -2334,6 +2322,17 @@ __webpack_require__.r(__webpack_exports__);
     })["catch"](function (errors) {
       console.log(errors);
     });
+  },
+  methods: {
+    // Elimina la noticia
+    deleteNew: function deleteNew() {
+      axios["delete"](_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiNewsURLS"]['DELETE_NEW'] + this.newId).then(function (response) {
+        // Redirije a la vista donde estan todas las noticias y envia el estatus de "elminada"
+        window.location.href = "/noticias/" + "eliminada";
+      })["catch"](function (errors) {
+        console.log(errors);
+      });
+    }
   }
 });
 
@@ -39015,28 +39014,41 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "mt-3" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "btn btn-primary mr-2",
-                  attrs: { href: "/noticias/editar/" + _vm.neww.id }
-                },
-                [_vm._v("Editar")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-danger",
-                  attrs: {
-                    "data-toggle": "modal",
-                    "data-target": "#delete-modal"
+            _c(
+              "div",
+              { staticClass: "mt-3" },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-primary mr-2",
+                    attrs: { href: "/noticias/editar/" + _vm.neww.id }
+                  },
+                  [_vm._v("Editar")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-danger",
+                    attrs: {
+                      "data-toggle": "modal",
+                      "data-target": "#delete-modal"
+                    }
+                  },
+                  [_vm._v("Eliminar")]
+                ),
+                _vm._v(" "),
+                _c("delete-new", {
+                  on: {
+                    deleteButtonPress: function($event) {
+                      return _vm.deleteNew()
+                    }
                   }
-                },
-                [_vm._v("Eliminar")]
-              )
-            ])
+                })
+              ],
+              1
+            )
           ])
         ])
       ])
