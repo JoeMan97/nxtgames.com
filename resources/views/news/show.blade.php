@@ -10,5 +10,6 @@
             <show-new new-id="{{ $id }}"></show-new>
 
         </div>
-    </div></div>
+    </div>
+</div>
 @endsection

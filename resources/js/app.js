@@ -7,7 +7,8 @@ window.Vue = require('vue');
 // Compononentes de la vista configuration
 
 // Compononentes de la vista games
-Vue.component('select-game', require('./components/games/SelectGame.vue').default);
+Vue.component('games', require('./components/games/Games.vue').default);
+Vue.component('selected-game', require('./components/games/SelectedGame.vue').default);
 Vue.component('connect-4', require('./components/games/Connect4.vue').default);
 Vue.component('snake', require('./components/games/Snake.vue').default);
 Vue.component('tetris', require('./components/games/Tetris.vue').default);

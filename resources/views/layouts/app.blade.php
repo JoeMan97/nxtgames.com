@@ -52,9 +52,10 @@
                         
                         <!-- Esto no se muestra en pantallas extra pequeñas y pequeñas -->
                         <li class="nav-item dropdown d-none d-md-block">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Juegos
-                            </a>
+                            <a class="nav-link" href="{{ route('select-game') }}">Juegos</a>
+                        </li>
+                        <li class="nav-item dropdown d-none d-md-block ml-n2">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbar-dropdown-1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                             <div class="dropdown-menu" aria-labelledby="navbar-dropdown-1">
                                 <a class="dropdown-item" href="{{ route('connect-4') }}">Conecta 4</a>
                                 <a class="dropdown-item" href="{{ route('the-game-of-life') }}">El juego de la vida</a>
