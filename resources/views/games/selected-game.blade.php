@@ -5,8 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             
-            <select-game game="{{ $game }}"></select-game>
+            <selected-game game="{{ $game }}"></selected-game>
 
         </div>
-    </div></div>
+    </div>
+</div>
 @endsection

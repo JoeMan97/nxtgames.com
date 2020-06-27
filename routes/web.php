@@ -14,11 +14,11 @@ Route::get('/home', 'HomeController@index')->name('home');
     Route::view('/configuracion', 'configuration')->name('configuration');
 
 // Rutas del modulo de juegos
-
-    Route::view('/juegos/conecta-4', 'games', ['game' => 'connect-4'])->name('connect-4');
-    Route::view('/juegos/el-juego-de-la-vida', 'games', ['game' => 'the-game-of-life'])->name('the-game-of-life');
-    Route::view('/juegos/snake', 'games', ['game' => 'snake'])->name('snake');
-    Route::view('/juegos/tetris', 'games', ['game' => 'tetris'])->name('tetris');
+    Route::view('/juegos', 'games/games')->name('select-game');
+    Route::view('/juegos/conecta-4', 'games/selected-game', ['game' => 'connect-4'])->name('connect-4');
+    Route::view('/juegos/el-juego-de-la-vida', 'games/selected-game', ['game' => 'the-game-of-life'])->name('the-game-of-life');
+    Route::view('/juegos/snake', 'games/selected-game', ['game' => 'snake'])->name('snake');
+    Route::view('/juegos/tetris', 'games/selected-game', ['game' => 'tetris'])->name('tetris');
 
 // Rutas del modulo de noticias
     Route::get('/noticias/{status?}', function($status = null) {

@@ -8,5 +8,6 @@
             <h1>Configuracion</h1>
 
         </div>
-    </div></div>
+    </div>
+</div>
 @endsection

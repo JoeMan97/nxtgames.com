@@ -10,5 +10,6 @@
             <edit-new new-id="{{ $id }}"></update-new>
 
         </div>
-    </div></div>
+    </div>
+</div>
 @endsection

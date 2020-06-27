@@ -30,6 +30,7 @@
 </template>
 <script>
 import { apiNewsURLS } from '../../constants.js'
+import { cutText } from '../../functions.js'
 
 export default {
     props:{
@@ -48,29 +49,19 @@ export default {
     },
     created() {
         // Obtiene todas las noticias
-        axios.get(apiNewsURLS['GET_NEWS']).then(response => (
+        axios.get(apiNewsURLS['GET_NEWS'])
+        .then(response => (
             this.newws = response.data,
-
             // Al obtenerlas se oculta el spinner
             this.loading = false
-        ));
+        )).catch(function(errors) {
+            console.log(errors);
+        });
     },
     methods: {
         // Retorna una parte del cuerpo de la noticia
         cutBody(body) {
-            if (body.length < 250) return body;
-
-            body = body.substring(0, 250);
-
-            if (body.substring(body.length -1) === " ") {
-                body = body.substring(0, body.length - 1);
-            }
-                
-            if (body.substring(body.length -1) === ".") {
-                body = body.substring(0, body.length - 1);
-            }
-
-            return body + "...";
+            return cutText(body, 250);
         }
     }
 }

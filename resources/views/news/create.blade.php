@@ -10,5 +10,6 @@
             <write-new user-id="{{ Auth::user()->id }}"></write-new>
 
         </div>
-    </div></div>
+    </div>
+</div>
 @endsection

@@ -49,7 +49,6 @@ export default {
         axios.get(apiNewsURLS['GET_NEW'] + this.newId)
         .then(response => (
             this.neww = response.data,
-
             // Al obtenerla se oculta el spinner
             this.loading = false
         )).catch(function(errors) {
