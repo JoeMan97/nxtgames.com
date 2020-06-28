@@ -29,6 +29,7 @@ import { apiNewsURLS } from '../../constants.js'
 
 export default {
     methods: {
+        // emite el evento deleteButtonPress en el componente padre
         deleteNew() {
             this.$emit('deleteButtonPress');
         }

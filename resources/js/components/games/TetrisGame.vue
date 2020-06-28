@@ -1,4 +1,4 @@
-<!-- Componente para visualizar el juego en si -->
+<!-- Componente para interactuar con el juego tetris -->
 <template>
 
     <div class="container p-3" id="tetris">

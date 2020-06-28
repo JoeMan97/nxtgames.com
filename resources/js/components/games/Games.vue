@@ -1,3 +1,4 @@
+<!-- muestra el listado de los juegos que tiene el sitio -->
 <template>
     <div>
         <div class="row">

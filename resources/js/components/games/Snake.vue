@@ -1,3 +1,4 @@
+<!-- componente con los elementos visbles de la pagina /juegos/snake  -->
 <template>
 
     <h1>

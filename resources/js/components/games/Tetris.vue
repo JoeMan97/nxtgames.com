@@ -1,4 +1,4 @@
-<!-- componente con los elementos visbles de la pagina tetris  -->
+<!-- componente con los elementos visibles de la pagina /juegos/tetris  -->
 <template>
 
     <div>
@@ -26,7 +26,9 @@ export default {
     },
     data() {
         return {
+            // variable con el id del juego tetris
             gameId: 4,
+            // variable que contendra los datos del juego
             game: {
                 name: null,
                 description: null

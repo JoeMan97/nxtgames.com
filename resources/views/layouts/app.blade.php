@@ -121,7 +121,7 @@
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
                                 <div class="collapse" id="collapseLogout">
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{{ route('configuration') }}">
                                         Configuración
                                     </a>
 
@@ -143,7 +143,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown-3" id="dropDownMenuLogout">
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{{ route('configuration') }}">
                                         Configuración
                                     </a>
 

@@ -1,3 +1,4 @@
+<!-- componente con los elementos visibles de la pagina /juegos/el-juego-de-la-vida -->
 <template>
 
     <h1>

@@ -1934,6 +1934,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {}
 });
@@ -1951,6 +1952,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants.js */ "./resources/js/constants.js");
 /* harmony import */ var _functions_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../functions.js */ "./resources/js/functions.js");
+//
 //
 //
 //
@@ -2086,19 +2088,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
+    // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
     game: {
       type: String,
       required: true
     }
   },
+  // componentes que utiliza el elemento component
   components: {
     'connect-4': _Connect4_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     'snake': _Snake_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     'tetris': _Tetris_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     'the-game-of-life': _TheGameOfLife_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
-  },
-  data: function data() {
-    return {};
   }
 });
 
@@ -2113,6 +2114,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -2162,7 +2164,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      // variable con el id del juego tetris
       gameId: 4,
+      // variable que contendra los datos del juego
       game: {
         name: null,
         description: null
@@ -2245,6 +2249,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {}
 });
@@ -2290,6 +2295,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
+    // emite el evento deleteButtonPress en el componente padre
     deleteNew: function deleteNew() {
       this.$emit('deleteButtonPress');
     }
@@ -2489,6 +2495,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants.js */ "./resources/js/constants.js");
+//
 //
 //
 //
