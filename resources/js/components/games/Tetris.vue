@@ -10,7 +10,9 @@
 
         <h3 class="mt-3">Acerca del juego</h3>
         <!-- Para interpretar saltos de linea \r\n -->
-        <span style="white-space: pre-line">{{ game.description }}</span>
+        <p class="text-justify">
+            <span class="text-justify" style="white-space: pre-line">{{ game.description }}</span>
+        </p>
     </div>
 
 </template>

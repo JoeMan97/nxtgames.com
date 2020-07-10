@@ -2155,6 +2155,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
  // Componente importado de manera local
 
 
@@ -2191,9 +2193,11 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js& ***!
   \***************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 //
 //
 //
@@ -2227,9 +2231,570 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      // para saber el esstado en en que se encuentra el juego
+      gameState: 'ready',
+      // para el texto del boton gris
+      playBtnTxt: "Jugar",
+      // para manipular el tetromino que se aparezca en la pantalla
+      currentTet: new Array(),
+      // para definir la funcion que se ejecutara cada x milisegundos
+      interval: null,
+      // para saber si en una celda hay un cuadrado o no
+      booleans: new Array(),
+      // para almacenar todos los divs que se vayan creando
+      divs: new Array(),
+      // para saber la forma del tetromino
+      tetType: String,
+      // para saber la orientacion del tetromino
+      tetOrientation: Number
+    };
+  },
+  methods: {
+    // empieza o pausa el juego
+    manageGame: function manageGame() {
+      if (this.gameState === 'ready') {
+        this.startGame();
+      } else if (this.gameState === 'playing') {
+        this.pauseGame();
+      } else if (this.gameState === 'paused') {
+        this.continueGame();
+      }
+    },
+    // asigna valores iniciales
+    initValues: function initValues() {
+      this.gameState = 'playing';
+      this.playBtnTxt = "Pausa"; // inicializan la matriz booleans
+
+      for (var l = 0; l < 20; l++) {
+        var row = [];
+
+        for (var m = 0; m < 12; m++) {
+          row[m] = false;
+        }
+
+        this.booleans[l] = row;
+      }
+
+      for (var _l = 1; _l < 19; _l++) {
+        for (var _m = 1; _m < 11; _m++) {
+          this.booleans[_l][_m] = true;
+        }
+      } // inicializa la matriz de divs
+
+
+      for (var _l2 = 0; _l2 < 18; _l2++) {
+        var _row = [];
+
+        for (var _m2 = 0; _m2 < 10; _m2++) {
+          _row[_m2] = null;
+        }
+
+        this.divs[_l2] = _row;
+      }
+    },
+    // empieza el juego
+    startGame: function startGame() {
+      this.initValues();
+      this.putTetromino("screen");
+      this.interval = setInterval(this.carryTetromino, 500);
+    },
+    // pausa el juego
+    pauseGame: function pauseGame() {
+      this.gameState = 'paused';
+      this.playBtnTxt = "Continuar";
+      clearInterval(this.interval);
+    },
+    continueGame: function continueGame() {
+      this.gameState = 'playing';
+      this.playBtnTxt = "Pausa";
+      this.interval = setInterval(this.carryTetromino, 500);
+    },
+    restartGame: function restartGame() {
+      this.gameState = 'ready';
+      this.playBtnTxt = "Jugar";
+      clearInterval(this.interval);
+      document.querySelector("#screen").innerHTML = null;
+    },
+    // "baja" el tetromino 40px
+    carryTetromino: function carryTetromino() {
+      var _this = this;
+
+      if (this.tetHaveSpace('down')) {
+        this.moveTet('down');
+      } else {
+        var rows = new Array();
+        var l = 0;
+        this.currentTet.forEach(function (square) {
+          var col = _this.getPosition(square, 'left') / 40;
+          var row = _this.getPosition(square, 'top') / 40;
+          _this.booleans[row + 1][col + 1] = false;
+          _this.divs[row][col] = square;
+
+          if (!rows.includes(row)) {
+            rows[l] = row;
+            l++;
+          }
+        });
+        this.checkRows(rows);
+        this.putTetromino("screen");
+      }
+    },
+    // checa las filas donde se ponen los tetrominos para ver si hay que eliminarlas
+    checkRows: function checkRows(rows) {
+      var rowsRemoved = false;
+
+      for (var l = 0; l < rows.length; l++) {
+        var squaresNumber = 0; // en cada fila...
+
+        for (var m = 0; m < 10; m++) {
+          // se revisa cuantos cuadrados hay
+          if (this.divs[rows[l]][m]) squaresNumber++;
+        } // si hay 10...
+
+
+        if (squaresNumber === 10) {
+          // se eliminan todos los de la fila
+          for (var _m3 = 0; _m3 < 10; _m3++) {
+            this.divs[rows[l]][_m3].remove();
+
+            this.divs[rows[l]][_m3] = null; // se libera el espacio en la matriz booleans
+
+            this.booleans[rows[l] + 1][_m3 + 1] = true;
+          }
+
+          for (var _m4 = rows[l] - 1; _m4 >= 0; _m4--) {
+            for (var n = 0; n < 10; n++) {
+              if (this.divs[_m4][n]) {
+                this.moveSquare(this.divs[_m4][n], 40, 0); //this.booleans[m + 2][n + 1] = false;
+              }
+            }
+          }
+        }
+      }
+    },
+    // verifica si tetromino tiene espacio para poder bajar
+    tetHaveSpace: function tetHaveSpace(direction) {
+      var rowOffset = 0,
+          colOffset = 0;
+
+      switch (direction) {
+        case 'left':
+          colOffset = -1;
+          break;
+
+        case 'right':
+          colOffset = 1;
+          break;
+
+        case 'down':
+          rowOffset = 1;
+          break;
+      }
+
+      var row, col;
+      row = this.getPosition(this.currentTet[0], 'top') / 40;
+      col = this.getPosition(this.currentTet[0], 'left') / 40;
+      var emptyCell1 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+      row = this.getPosition(this.currentTet[1], 'top') / 40;
+      col = this.getPosition(this.currentTet[1], 'left') / 40;
+      var emptyCell2 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+      row = this.getPosition(this.currentTet[2], 'top') / 40;
+      col = this.getPosition(this.currentTet[2], 'left') / 40;
+      var emptyCell3 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+      row = this.getPosition(this.currentTet[3], 'top') / 40;
+      col = this.getPosition(this.currentTet[3], 'left') / 40;
+      var emptyCell4 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+      return emptyCell1 && emptyCell2 && emptyCell3 && emptyCell4 ? true : false;
+    },
+    // obtiene los pixeles de la propieded .left o .top de un elemento
+    getPosition: function getPosition(element, side) {
+      var value;
+
+      if (side === 'left') {
+        value = String(element.style.left);
+      } else if (side === 'top') {
+        value = String(element.style.top);
+      }
+
+      return Number(value.substring(0, value.length - 2));
+    },
+    moveTet: function moveTet(direction) {
+      var _this2 = this;
+
+      switch (direction) {
+        case 'left':
+          this.currentTet.forEach(function (square) {
+            var newleft = _this2.getPosition(square, 'left') - 40;
+            square.style.left = newleft + "px";
+          });
+          break;
+
+        case 'right':
+          this.currentTet.forEach(function (square) {
+            var newleft = _this2.getPosition(square, 'left') + 40;
+            square.style.left = newleft + "px";
+          });
+          break;
+
+        case 'down':
+          this.currentTet.forEach(function (square) {
+            var newTop = _this2.getPosition(square, 'top') + 40;
+            square.style.top = newTop + "px";
+          });
+          break;
+      }
+    },
+    squareCanOcupy: function squareCanOcupy(square, rowOffset, colOffset) {
+      var row = this.getPosition(square, 'top') / 40;
+      var col = this.getPosition(square, 'left') / 40;
+      return this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+    },
+    moveSquare: function moveSquare(square, topOffset, leftOffset) {
+      var newTop = this.getPosition(square, 'top') + topOffset;
+      square.style.top = newTop + "px";
+      var newLeft = this.getPosition(square, 'left') + leftOffset;
+      square.style.left = newLeft + "px";
+    },
+    // rota la figura
+    rotateTet: function rotateTet() {
+      switch (this.tetType) {
+        case 'I':
+          if (this.tetOrientation == 1) {
+            // si cada div puede estar en el nuevo lugar...
+            if (this.squareCanOcupy(this.currentTet[0], -1, 1) && this.squareCanOcupy(this.currentTet[2], 1, -1) && this.squareCanOcupy(this.currentTet[3], 2, -2)) {
+              // se coloca cada uno en el nuevo lugar
+              this.moveSquare(this.currentTet[0], -40, 40);
+              this.moveSquare(this.currentTet[2], 40, -40);
+              this.moveSquare(this.currentTet[3], 80, -80);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[0], 1, -1) && this.squareCanOcupy(this.currentTet[2], -1, 1) && this.squareCanOcupy(this.currentTet[3], -2, 2)) {
+              this.moveSquare(this.currentTet[0], 40, -40);
+              this.moveSquare(this.currentTet[2], -40, 40);
+              this.moveSquare(this.currentTet[3], -80, 80);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+
+        case 'T':
+          if (this.tetOrientation == 1) {
+            if (this.squareCanOcupy(this.currentTet[1], -1, 0)) {
+              this.moveSquare(this.currentTet[1], -40, 0);
+              this.moveSquare(this.currentTet[2], 0, -40);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[2], 0, 1)) {
+              this.moveSquare(this.currentTet[3], -40, 0);
+              this.moveSquare(this.currentTet[2], 0, 40);
+              this.tetOrientation = 3;
+            }
+          } else if (this.tetOrientation == 3) {
+            if (this.squareCanOcupy(this.currentTet[3], 1, 0)) {
+              this.moveSquare(this.currentTet[0], 0, 40);
+              this.moveSquare(this.currentTet[3], 40, 0);
+              this.tetOrientation = 4;
+            }
+          } else if (this.tetOrientation == 4) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, -1)) {
+              this.moveSquare(this.currentTet[0], 0, -40);
+              this.moveSquare(this.currentTet[1], 40, 0);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+
+        case 'J':
+          if (this.tetOrientation == 1) {
+            if (this.squareCanOcupy(this.currentTet[0], -1, 1) && this.squareCanOcupy(this.currentTet[2], 1, -1) && this.squareCanOcupy(this.currentTet[3], 0, -2)) {
+              this.moveSquare(this.currentTet[0], -40, 40);
+              this.moveSquare(this.currentTet[2], 40, -40);
+              this.moveSquare(this.currentTet[3], 0, -80);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[0], 1, 1) && this.squareCanOcupy(this.currentTet[2], -1, -1) && this.squareCanOcupy(this.currentTet[3], -2, 0)) {
+              this.moveSquare(this.currentTet[0], 40, 40);
+              this.moveSquare(this.currentTet[2], -40, -40);
+              this.moveSquare(this.currentTet[3], -80, 0);
+              this.tetOrientation = 3;
+            }
+          } else if (this.tetOrientation == 3) {
+            if (this.squareCanOcupy(this.currentTet[0], 1, -1) && this.squareCanOcupy(this.currentTet[2], -1, 1) && this.squareCanOcupy(this.currentTet[3], 0, 2)) {
+              this.moveSquare(this.currentTet[0], 40, -40);
+              this.moveSquare(this.currentTet[2], -40, 40);
+              this.moveSquare(this.currentTet[3], 0, 80);
+              this.tetOrientation = 4;
+            }
+          } else if (this.tetOrientation == 4) {
+            if (this.squareCanOcupy(this.currentTet[0], -1, -1) && this.squareCanOcupy(this.currentTet[2], 1, 1) && this.squareCanOcupy(this.currentTet[3], 2, 0)) {
+              this.moveSquare(this.currentTet[0], -40, -40);
+              this.moveSquare(this.currentTet[2], 40, 40);
+              this.moveSquare(this.currentTet[3], 80, 0);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+
+        case 'L':
+          if (this.tetOrientation == 1) {
+            if (this.squareCanOcupy(this.currentTet[0], 2, 0) && this.squareCanOcupy(this.currentTet[1], -1, 1) && this.squareCanOcupy(this.currentTet[3], 1, -1)) {
+              this.moveSquare(this.currentTet[0], 80, 0);
+              this.moveSquare(this.currentTet[1], -40, 40);
+              this.moveSquare(this.currentTet[3], 40, -40);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, -2) && this.squareCanOcupy(this.currentTet[1], 1, 1) && this.squareCanOcupy(this.currentTet[3], -1, -1)) {
+              this.moveSquare(this.currentTet[0], 0, -80);
+              this.moveSquare(this.currentTet[1], 40, 40);
+              this.moveSquare(this.currentTet[3], -40, -40);
+              this.tetOrientation = 3;
+            }
+          } else if (this.tetOrientation == 3) {
+            if (this.squareCanOcupy(this.currentTet[0], -2, 0) && this.squareCanOcupy(this.currentTet[1], 1, -1) && this.squareCanOcupy(this.currentTet[3], -1, 1)) {
+              this.moveSquare(this.currentTet[0], -80, 0);
+              this.moveSquare(this.currentTet[1], 40, -40);
+              this.moveSquare(this.currentTet[3], -40, 40);
+              this.tetOrientation = 4;
+            }
+          } else if (this.tetOrientation == 4) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, 2) && this.squareCanOcupy(this.currentTet[1], -1, -1) && this.squareCanOcupy(this.currentTet[3], 1, 1)) {
+              this.moveSquare(this.currentTet[0], 0, 80);
+              this.moveSquare(this.currentTet[1], -40, -40);
+              this.moveSquare(this.currentTet[3], 40, 40);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+
+        case 'S':
+          if (this.tetOrientation == 1) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, 2) && this.squareCanOcupy(this.currentTet[1], -2, 0)) {
+              this.moveSquare(this.currentTet[0], 0, 80);
+              this.moveSquare(this.currentTet[1], -80, 0);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, -2) && this.squareCanOcupy(this.currentTet[1], 2, 0)) {
+              this.moveSquare(this.currentTet[0], 0, -80);
+              this.moveSquare(this.currentTet[1], 80, 0);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+
+        case 'Z':
+          if (this.tetOrientation == 1) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, 2) && this.squareCanOcupy(this.currentTet[1], 2, 0)) {
+              this.moveSquare(this.currentTet[0], 0, 80);
+              this.moveSquare(this.currentTet[1], 80, 0);
+              this.tetOrientation = 2;
+            }
+          } else if (this.tetOrientation == 2) {
+            if (this.squareCanOcupy(this.currentTet[0], 0, -2) && this.squareCanOcupy(this.currentTet[1], -2, 0)) {
+              this.moveSquare(this.currentTet[0], 0, -80);
+              this.moveSquare(this.currentTet[1], -80, 0);
+              this.tetOrientation = 1;
+            }
+          }
+
+          break;
+      }
+    },
+    // pone un tetromino en una de las 2 pantallas
+    putTetromino: function putTetromino(location) {
+      var basicStyle = "display: inline-block; width: 40px; height: 40px; position: absolute;";
+      var cyanSquareStyle = basicStyle + "background: cyan;";
+      var yellowSquareStyle = basicStyle + "background: yellow;";
+      var magentaSquareStyle = basicStyle + "background: magenta;";
+      var blueSquareStyle = basicStyle + "background: blue;";
+      var orangeSquareStyle = basicStyle + "background: orange;";
+      var lawnGreenSquareStyle = basicStyle + "background: lawnGreen;";
+      var redSquareStyle = basicStyle + "background: red;";
+      var screen = document.querySelector("#" + location);
+      var square1 = document.createElement("div");
+      var square2 = document.createElement("div");
+      var square3 = document.createElement("div");
+      var square4 = document.createElement("div");
+      var squareArray = [square1, square2, square3, square4]; // this.getRandomInt(1, 7)
+
+      switch (2) {
+        case 1:
+          // I
+          this.tetType = 'I';
+          var left = 120;
+          squareArray.forEach(function (square) {
+            square.style.cssText = cyanSquareStyle;
+            square.style.top = "40px";
+            square.style.left = left + "px";
+            left += 40;
+          });
+          break;
+
+        case 2:
+          // O
+          this.tetType = 'O';
+          squareArray.forEach(function (square) {
+            square.style.cssText = yellowSquareStyle;
+          });
+          squareArray[0].style.top = '40px';
+          squareArray[0].style.left = '160px';
+          squareArray[1].style.top = '40px';
+          squareArray[1].style.left = '200px';
+          squareArray[2].style.top = '80px';
+          squareArray[2].style.left = '160px';
+          squareArray[3].style.top = '80px';
+          squareArray[3].style.left = '200px';
+          break;
+
+        case 3:
+          // T
+          this.tetType = 'T';
+          squareArray.forEach(function (square) {
+            square.style.cssText = magentaSquareStyle;
+          });
+          squareArray[0].style.top = '40px';
+          squareArray[0].style.left = '120px';
+          squareArray[1].style.top = '40px';
+          squareArray[1].style.left = '160px';
+          squareArray[2].style.top = '40px';
+          squareArray[2].style.left = '200px';
+          squareArray[3].style.top = '80px';
+          squareArray[3].style.left = '160px';
+          break;
+
+        case 4:
+          // J
+          this.tetType = 'J';
+          squareArray.forEach(function (square) {
+            square.style.cssText = blueSquareStyle;
+          });
+          squareArray[0].style.top = '40px';
+          squareArray[0].style.left = '120px';
+          squareArray[1].style.top = '40px';
+          squareArray[1].style.left = '160px';
+          squareArray[2].style.top = '40px';
+          squareArray[2].style.left = '200px';
+          squareArray[3].style.top = '80px';
+          squareArray[3].style.left = '200px';
+          break;
+
+        case 5:
+          // L
+          this.tetType = 'L';
+          squareArray.forEach(function (square) {
+            square.style.cssText = orangeSquareStyle;
+          });
+          squareArray[0].style.top = '40px';
+          squareArray[0].style.left = '200px';
+          squareArray[1].style.top = '80px';
+          squareArray[1].style.left = '120px';
+          squareArray[2].style.top = '80px';
+          squareArray[2].style.left = '160px';
+          squareArray[3].style.top = '80px';
+          squareArray[3].style.left = '200px';
+          break;
+
+        case 6:
+          // S
+          this.tetType = 'S';
+          squareArray.forEach(function (square) {
+            square.style.cssText = lawnGreenSquareStyle;
+          });
+          squareArray[0].style.top = '80px';
+          squareArray[0].style.left = '120px';
+          squareArray[1].style.top = '80px';
+          squareArray[1].style.left = '160px';
+          squareArray[2].style.top = '40px';
+          squareArray[2].style.left = '160px';
+          squareArray[3].style.top = '40px';
+          squareArray[3].style.left = '200px';
+          break;
+
+        case 7:
+          // Z
+          this.tetType = 'Z';
+          squareArray.forEach(function (square) {
+            square.style.cssText = redSquareStyle;
+          });
+          squareArray[0].style.top = '40px';
+          squareArray[0].style.left = '120px';
+          squareArray[1].style.top = '40px';
+          squareArray[1].style.left = '160px';
+          squareArray[2].style.top = '80px';
+          squareArray[2].style.left = '160px';
+          squareArray[3].style.top = '80px';
+          squareArray[3].style.left = '200px';
+          break;
+      }
+
+      squareArray.forEach(function (square) {
+        screen.appendChild(square);
+      });
+      this.tetOrientation = 1;
+      this.currentTet = squareArray;
+    },
+    // obtiene un numero aleatorio entre min (inclusivo) y max (inclusivo)
+    getRandomInt: function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    // metodo para imprimir una matriz cuando se necesite
+    printMatrix: function printMatrix(matrix, rows, cols) {
+      for (var r = 0; r < rows; r++) {
+        var row = "";
+
+        for (var c = 0; c < cols; c++) {
+          row += r + "," + c + " " + (matrix[r][c] ? " " : "*") + "\t";
+        }
+
+        console.log(row);
+      }
+    }
+  },
+  mounted: function mounted() {
+    var _this3 = this;
+
+    window.addEventListener('keydown', function (event) {
+      var direction;
+
+      switch (event.key) {
+        case 'w':
+          // arriba
+          _this3.rotateTet();
+
+          break;
+
+        case 'a':
+          // izquierda
+          if (_this3.tetHaveSpace('left')) _this3.moveTet('left');
+          break;
+
+        case 's':
+          // abajo
+          if (_this3.tetHaveSpace('down')) _this3.moveTet('down');
+          break;
+
+        case 'd':
+          // derecha
+          if (_this3.tetHaveSpace('right')) _this3.moveTet('right');
+          break;
+      }
+    }, false);
+  }
+});
 
 /***/ }),
 
@@ -39122,8 +39687,15 @@ var render = function() {
       _vm._v(" "),
       _c("h3", { staticClass: "mt-3" }, [_vm._v("Acerca del juego")]),
       _vm._v(" "),
-      _c("span", { staticStyle: { "white-space": "pre-line" } }, [
-        _vm._v(_vm._s(_vm.game.description))
+      _c("p", { staticClass: "text-justify" }, [
+        _c(
+          "span",
+          {
+            staticClass: "text-justify",
+            staticStyle: { "white-space": "pre-line" }
+          },
+          [_vm._v(_vm._s(_vm.game.description))]
+        )
       ])
     ],
     1
@@ -39136,10 +39708,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true&":
-/*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true& ***!
-  \*******************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4& ***!
+  \*******************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -39151,66 +39723,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "container p-3", attrs: { id: "tetris" } },
-      [
-        _c("div", { staticClass: "row justify-content-center" }, [
-          _c("div", {
-            staticClass: "border",
-            staticStyle: { width: "400px", height: "720px" },
-            attrs: { id: "screen" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "px-3 d-flex flex-column" }, [
-            _c("h4", [_vm._v("Puntaje")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "p-1 border", attrs: { id: "score" } }, [
-              _vm._v("\n                0000\n            ")
-            ]),
-            _vm._v(" "),
-            _c("h4", { staticClass: "mt-3" }, [_vm._v("Nivel")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "p-1 border", attrs: { id: "level" } }, [
-              _vm._v("\n                00\n            ")
-            ]),
-            _vm._v(" "),
-            _c("h4", { staticClass: "mt-3" }, [_vm._v("Siguiente Tetrominó")]),
-            _vm._v(" "),
-            _c("div", {
-              staticClass: "p-1 border",
-              staticStyle: { height: "160px" },
-              attrs: { id: "next" }
-            }),
+  return _c("div", { staticClass: "container p-3", attrs: { id: "tetris" } }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", {
+        staticClass: "border shadow",
+        staticStyle: { width: "400px", height: "720px", position: "relative" },
+        attrs: { id: "screen" }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "px-3 d-flex flex-column" }, [
+        _c("h4", [_vm._v("Puntaje")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "p-1 border", attrs: { id: "score" } }, [
+          _vm._v("\n                0000\n            ")
+        ]),
+        _vm._v(" "),
+        _c("h4", { staticClass: "mt-3" }, [_vm._v("Nivel")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "p-1 border", attrs: { id: "level" } }, [
+          _vm._v("\n                01\n            ")
+        ]),
+        _vm._v(" "),
+        _c("h4", { staticClass: "mt-3" }, [_vm._v("Siguiente Tetrominó")]),
+        _vm._v(" "),
+        _c("div", {
+          staticClass: "p-1 border",
+          staticStyle: { height: "160px" },
+          attrs: { id: "screen2" }
+        }),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "flex-fill d-flex flex-column justify-content-end" },
+          [
+            _c(
+              "button",
+              {
+                staticClass: "mt-2 btn btn-secondary",
+                on: {
+                  click: function($event) {
+                    return _vm.manageGame()
+                  }
+                }
+              },
+              [_vm._v(_vm._s(_vm.playBtnTxt))]
+            ),
             _vm._v(" "),
             _c(
-              "div",
+              "button",
               {
-                staticClass: "flex-fill d-flex flex-column justify-content-end"
+                staticClass: "mt-2 btn btn-danger",
+                on: {
+                  click: function($event) {
+                    return _vm.restartGame()
+                  }
+                }
               },
-              [
-                _c("button", { staticClass: "mt-2 btn btn-secondary" }, [
-                  _vm._v("Pausa")
-                ]),
-                _vm._v(" "),
-                _c("button", { staticClass: "mt-2 btn btn-danger" }, [
-                  _vm._v("Reiniciar")
-                ])
-              ]
+              [_vm._v("Reiniciar")]
             )
-          ])
-        ])
-      ]
-    )
-  }
-]
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -52408,15 +52985,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************************!*\
   !*** ./resources/js/components/games/TetrisGame.vue ***!
   \******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true& */ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true&");
+/* harmony import */ var _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TetrisGame.vue?vue&type=template&id=15ff9fa4& */ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&");
 /* harmony import */ var _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TetrisGame.vue?vue&type=script&lang=js& */ "./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -52426,11 +53002,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  "15ff9fa4",
+  null,
   null
   
 )
@@ -52446,31 +53022,29 @@ component.options.__file = "resources/js/components/games/TetrisGame.vue"
 /*!*******************************************************************************!*\
   !*** ./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js& ***!
   \*******************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./TetrisGame.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true&":
-/*!*************************************************************************************************!*\
-  !*** ./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true& ***!
-  \*************************************************************************************************/
+/***/ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4& ***!
+  \*************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./TetrisGame.vue?vue&type=template&id=15ff9fa4& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
