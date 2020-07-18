@@ -29,3 +29,5 @@ Vue.component('spinner', require('./components/Spinner.vue').default);
 const app = new Vue({
     el: '#app',
 });
+
+export const bus = new Vue();

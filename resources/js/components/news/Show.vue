@@ -17,6 +17,7 @@
                 <div class="mt-3">
                     <a :href="'/noticias/editar/' + neww.id" class="btn btn-primary mr-2">Editar</a>
                     <button class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">Eliminar</button>
+                    <!-- el componente hijo emite el evento deleteButtonPress que ejecuta la funcion deleteNew -->
                     <delete-new v-on:deleteButtonPress="deleteNew()"></delete-new>
                 </div>
             </div>

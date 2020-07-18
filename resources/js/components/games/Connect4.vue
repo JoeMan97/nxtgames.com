@@ -1,3 +1,4 @@
+<!-- componente con los elementos visibles de la pagina /juegos/conecta-4 -->
 <template>
 
     <h1>
