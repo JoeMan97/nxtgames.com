@@ -12,87 +12,181 @@
             <div class="px-3 d-flex flex-column">
                 <h4>Puntaje</h4>
                 <div class="p-1 border" id="score">
-                    0000
+                    {{ score }}
                 </div>
                 <h4 class="mt-3">Nivel</h4>
                 <div class="p-1 border" id="level">
-                    01
+                    {{ level }}
                 </div>
                 <h4 class="mt-3">Siguiente Tetrominó</h4>
-                <div class="p-1 border" id="screen2" style="height: 160px;">
+                <div class="p-1 border align-self-center" id="screen2" style="width: 160px; height: 160px; position: relative;">
                     
                 </div>
                 <div class="flex-fill d-flex flex-column justify-content-end">
-                    <button class="mt-2 btn btn-secondary" v-on:click="manageGame()">{{ playBtnTxt }}</button>
+                    <button class="mt-2 btn btn-primary" v-on:click="manageState()">{{ playBtnTxt }}</button>
                     <button class="mt-2 btn btn-danger" v-on:click="restartGame()">Reiniciar</button>              
                 </div>
             </div>
         </div>
+        <paused-game v-on:continueButtonPress="continueGame()"></paused-game>
+        <game-over :game-state="gameState" :score="score" :user-id="userId"></game-over>
     </div>
 
 </template>
 <script>
+// Componente importado de manera local
+import PausedGame from './PausedGame.vue';
+import GameOver from './GameOver.vue';
+
 export default {
+    components: {
+        'paused-game': PausedGame,
+        'game-over': GameOver
+    },
+    props: {
+        userId: {
+            required: true
+        }
+    },
     data() {
         return {
             // para saber el esstado en en que se encuentra el juego
-            gameState: 'ready',
+            gameState: String,
 
-            // para el texto del boton gris
-            playBtnTxt: "Jugar",
+            // ...Mostrar el texto del boton gris
+            playBtnTxt: String,
 
-            // para manipular el tetromino que se aparezca en la pantalla
+            // ...Manipular el tetromino que se aparezca en la pantalla
             currentTet: new Array(),
 
-            // para definir la funcion que se ejecutara cada x milisegundos
+            // ...Definir la funcion que se ejecutara cada x milisegundos
             interval: null,
 
-            // para saber si en una celda hay un cuadrado o no
-            booleans: new Array(),
-
-            // para almacenar todos los divs que se vayan creando
+            // ...Almacenar todos los divs que se vayan creando
             divs: new Array(),
 
-            // para saber la forma del tetromino
+            // ...Saber la forma del tetromino
             tetType: String,
 
-            // para saber la orientacion del tetromino
-            tetOrientation: Number
+            // ...Saber la orientacion del tetromino
+            tetOrientation: Number,
+
+            // ...Mostrar el nivel del juego
+            level: String,
+
+            // ...Mostrar el puntaje
+            score: Number,
+
+            // ...Saber el numero de lineas que se van borrando
+            linesDeleted: Number,
+
+            // ...Saber cuanto puntaje se debe aumentar
+            scoreAddition: Number,
+
+            // ...Aumentar la velocidad del juego en cada nivel
+            intervalTime: Number,
+
+            // ...Saber cual sera el siguiente tetromino
+            nextTet: Number
         }
     },
+    mounted() {
+        window.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp': // arriba
+                    event.preventDefault();
+                case 'W':
+                case 'w':
+                    if (this.gameState === 'playing') this.rotateTet();
+                    break;
+                case 'ArrowLeft': // izquierda
+                case 'A':  
+                case 'a':
+                    if (this.tetHasSpace('left') && this.gameState === 'playing') this.moveTet('left');
+                    break;
+                case 'ArrowDown': // abajo
+                    event.preventDefault();
+                case 'S':
+                case 's':
+                    if (this.tetHasSpace('down') && this.gameState === 'playing') this.moveTet('down');
+                    break;
+                case 'ArrowRight': // derecha
+                case 'D':
+                case 'd':
+                    if (this.tetHasSpace('right') && this.gameState === 'playing') this.moveTet('right');
+                    break;
+                case 'R':
+                case 'r':
+                        this.restartGame();
+                        this.startGame();
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                case 'Escape':
+                    this.manageState();
+                    break;  
+            }
+        }, false); 
+
+        this.initValues();
+    },
     methods: {
-        // empieza o pausa el juego
-        manageGame() {
+        // Empieza, pausa, o continua el juego
+        manageState() {
             if (this.gameState === 'ready') {
                 this.startGame();
             } else if (this.gameState === 'playing') {
                 this.pauseGame();
             } else if (this.gameState === 'paused') {
                 this.continueGame();
+            } else if (this.gameState === 'over') {
+                this.restartGame();
+                this.startGame();
             }
         },
 
-        // asigna valores iniciales
-        initValues() {
+        // Empieza el juego
+        startGame() {
             this.gameState = 'playing';
             this.playBtnTxt = "Pausa";
 
-            // inicializan la matriz booleans
-            for (let l = 0; l < 20; l++) {
-                let row = [];
-                for (let m = 0; m < 12; m++) {
-                    row[m] = false;
-                }
-                this.booleans[l] = row;   
-            }
+            this.nextTet = this.getRandomInt(1, 7);
+            this.putTetromino("screen");
+            this.putTetromino("screen2");
+            this.interval = setInterval(this.manageGame, this.intervalTime);
+        },
 
-            for (let l = 1; l < 19; l++) {
-                for (let m = 1; m < 11; m++) {
-                    this.booleans[l][m] = true;
-                }                
-            }
+        // Pausa el juego y abre el modal
+        pauseGame() {
+            clearInterval(this.interval);
 
-            // inicializa la matriz de divs
+            $("#paused-game-modal").modal('show');
+
+            this.gameState = 'paused';
+            this.playBtnTxt = "Continuar";
+        },
+
+        // Cierra el modal y continua el juego
+        continueGame() {
+            $("#paused-game-modal").modal('hide');
+
+            this.interval = setInterval(this.manageGame, this.intervalTime);
+
+            this.gameState = 'playing';
+            this.playBtnTxt = "Pausa";
+        },
+
+        // Asigna valores iniciales
+        initValues() {
+            this.gameState = 'ready',
+            this.playBtnTxt = "Jugar",
+            this.tetOrientation = 1;
+            this.level = "01";
+            this.score = 0;
+            this.linesDeleted = 0;
+            this.scoreAddition = 18;
+            this.intervalTime = 500;
+
             for (let l = 0; l < 18; l++) {
                 let row = [];
                 for (let m = 0; m < 10; m++) {
@@ -102,37 +196,21 @@ export default {
             }
         },
 
-        // empieza el juego
-        startGame() {
+        // Reinicia el juego
+        restartGame(){ 
+            $("#game-over-modal").modal('hide');
+
             this.initValues();
-            this.putTetromino("screen");
-            this.interval = setInterval(this.carryTetromino, 500);
-        },
 
-        // pausa el juego
-        pauseGame() {
-            this.gameState = 'paused';
-            this.playBtnTxt = "Continuar";
             clearInterval(this.interval);
-        },
 
-        continueGame() {
-            this.gameState = 'playing';
-            this.playBtnTxt = "Pausa";
-            this.interval = setInterval(this.carryTetromino, 500);
-        },
-
-        restartGame(){
-            this.gameState = 'ready';
-            this.playBtnTxt = "Jugar";    
-            
-            clearInterval(this.interval);
             document.querySelector("#screen").innerHTML = null;
+            document.querySelector("#screen2").innerHTML = null;
         },
 
-        // "baja" el tetromino 40px
-        carryTetromino() {
-            if (this.tetHaveSpace('down')) {
+        // Funcion principal: Es llamada cada x milisegundos a lo largo del juego
+        manageGame() {
+            if (this.tetIsInside() && this.tetHasSpace('down')) {
                 this.moveTet('down');
             } else {
                 let rows = new Array();
@@ -140,7 +218,6 @@ export default {
                 this.currentTet.forEach(square => {
                     let col = this.getPosition(square, 'left') / 40;
                     let row = this.getPosition(square, 'top') / 40;
-                    this.booleans[row + 1][col + 1] = false;
 
                     this.divs[row][col] =  square;
 
@@ -149,16 +226,60 @@ export default {
                         l++;
                     }
                 });
+                
+                // Es importante que este ordenada la matriz
+                this.checkRows(rows.sort()); 
 
-                this.checkRows(rows);
+                this.score += this.scoreAddition;
 
-                this.putTetromino("screen");
+                this.manageValues();
+                
+                // Aqui se verifica si el jugador perdio
+                if (this.divs[1][5]) {
+                    this.gameState = 'over';
+                    this.playBtnTxt = "Jugar";    
+
+                    clearInterval(this.interval);
+                    $('#game-over-modal').modal('show');
+                } else {
+                    this.putTetromino("screen");
+                    document.querySelector("#screen2").innerHTML = null;
+                    this.putTetromino("screen2");
+                }
             }
         },
 
-        // checa las filas donde se ponen los tetrominos para ver si hay que eliminarlas
+        // Gestiona los valores del juego (nivel, puntaje, etc.)
+        manageValues(){ 
+            if((this.linesDeleted >= 20) && (this.linesDeleted < 40)) {
+                this.intervalTime = 450;
+                this.level = "02";
+            } else if((this.linesDeleted >= 40) && (this.linesDeleted < 60)) {
+                this.intervalTime = 400;
+                this.level = "03";
+            } else if ((this.linesDeleted >= 60) && (this.linesDeleted < 80)) {
+                this.intervalTime = 350;
+                this.level = "04";
+            } else if ((this.linesDeleted >= 80) && (this.linesDeleted < 100)) {
+                this.scoreAddition = 17;
+                tthis.intervalTime= 300;
+                this.level = "05";
+            } else if((this.linesDeleted >= 100) && (this.linesDeleted < 120)) {
+                this.intervalTime = 275;
+                this.level = "06";
+            } else if((this.linesDeleted >= 120) && (this.linesDeleted < 150)) {
+                this.intervalTime = 250;
+                this.level = "07";
+            } else if (this.linesDeleted >= 150) {
+                this.gameState = 'over';
+                clearInterval(this.interval);
+                $('#game-over-modal').modal('show');
+            }
+        },
+
+        // Checa si debe eliminar las filas
         checkRows(rows) {
-            let rowsRemoved = false;
+            let rowsRemoved = 0;
             for (let l = 0; l < rows.length; l++) {
                 let squaresNumber = 0;
 
@@ -170,30 +291,40 @@ export default {
 
                 // si hay 10...
                 if (squaresNumber === 10) {             
-                    // se eliminan todos los de la fila
+                    // se elimina la fila en la pantalla
                     for (let m = 0; m < 10; m++) {
                         this.divs[rows[l]][m].remove();
-                        this.divs[rows[l]][m] = null;
-
-                        // se libera el espacio en la matriz booleans
-                        this.booleans[rows[l] + 1][m + 1] = true;
                     }
 
+                    // se bajan los cuadrados que quedaron en el aire
                     for (let m = rows[l] - 1; m >= 0; m--) {
                         for (let n = 0; n < 10; n++) {
-                            if (this.divs[m][n]) {
-                                this.moveSquare(this.divs[m][n], 40, 0);
-
-                                //this.booleans[m + 2][n + 1] = false;
-                            } 
+                            if (this.divs[m][n]) this.moveSquare(this.divs[m][n], 40, 0);
                         }
                     }
+
+                    // se elimina el elemento rows[l] de la matriz divs
+                    this.divs.splice(rows[l], 1);
+                    // se agrega un nuevo elemento al inicio de la matriz divs
+                    this.divs.unshift([null, null, null, null, null, null, null, null, null, null]);
+
+                    rowsRemoved++;
                 }
             }
+
+            // se suma cierto puntaje segun el numero de lineas eliminadas
+            if (rowsRemoved) {
+                if (rowsRemoved === 1) this.score += 40;
+                else if (rowsRemoved === 2) this.score += 100;
+                else if (rowsRemoved === 3) this.score += 300;
+                else if (rowsRemoved === 4) this.score += 1200;
+
+                this.linesDeleted += rowsRemoved;    
+            } 
         },
 
-        // verifica si tetromino tiene espacio para poder bajar
-        tetHaveSpace(direction) {
+        // Verifica si tetromino tiene espacio para poder moverse
+        tetHasSpace(direction) {
             let rowOffset = 0, colOffset = 0;
 
             switch (direction) {
@@ -212,34 +343,55 @@ export default {
 
             row = this.getPosition(this.currentTet[0], 'top') / 40;
             col = this.getPosition(this.currentTet[0], 'left') / 40;
-            let emptyCell1 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+            let cell1 = this.divs[row + rowOffset][col + colOffset];
 
             row = this.getPosition(this.currentTet[1], 'top') / 40;
             col= this.getPosition(this.currentTet[1], 'left') / 40;
-            let emptyCell2 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+            let cell2 = this.divs[row + rowOffset][col + colOffset];
 
             row = this.getPosition(this.currentTet[2], 'top') / 40;
             col = this.getPosition(this.currentTet[2], 'left') / 40;
-            let emptyCell3 = this.booleans[row + 1 + rowOffset][ col + 1 + colOffset];
+            let cell3 = this.divs[row + rowOffset][col + colOffset];
 
             row = this.getPosition(this.currentTet[3], 'top') / 40;
             col = this.getPosition(this.currentTet[3], 'left') / 40;
-            let emptyCell4 = this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+            let cell4 = this.divs[row + rowOffset][col + colOffset];
 
-            return (emptyCell1 && emptyCell2 && emptyCell3 && emptyCell4)? true : false;
+            return (cell1 === null && cell2 === null &&
+                cell3 === null && cell4 === null)? true : false;
         },
 
-        // obtiene los pixeles de la propieded .left o .top de un elemento
+        // Verifica que el tretomino este dentro del limite inferior
+        tetIsInside() {
+            let position1 = this.getPosition(this.currentTet[0], 'top');
+            let position2 = this.getPosition(this.currentTet[1], 'top');
+            let position3 = this.getPosition(this.currentTet[2], 'top');
+            let position4 = this.getPosition(this.currentTet[3], 'top');
+            return (position1 < 680 && position2 < 680 && position3 < 680 && position4 < 680)? true : false;
+        },
+
+        // Obtiene los pixeles de la propieded .left o .top de un elemento
         getPosition(element, side) {
             let value;
-            if (side === 'left') {
-                value = String(element.style.left);
-            } else if (side === 'top') {
-                value = String(element.style.top);       
+            switch (side) {
+                case 'left':
+                    value = String(element.style.left);
+                break;
+                case 'right':
+                    value = String(element.style.right);
+                break;
+                case 'top':
+                    value = String(element.style.top);
+                break;
+                case 'bottom':
+                    value = String(element.style.bottom);
+                break;
             }
+
             return Number(value.substring(0,  value.length - 2));
         },
 
+        // Mueve el tetromino en alguna direccion
         moveTet(direction) {
             switch (direction) {
                 case 'left':
@@ -263,12 +415,14 @@ export default {
             }
         },
         
+        // Verifica si un cuadrado puede ocupar un lugar de la matriz divs
         squareCanOcupy(square, rowOffset, colOffset) {
             let row = this.getPosition(square, 'top') / 40;
             let col = this.getPosition(square, 'left') / 40;
-            return this.booleans[row + 1 + rowOffset][col + 1 + colOffset];
+            return (this.divs[row + rowOffset][col + colOffset] === null)? true : false;
         },
 
+        // Mueve un cuadrado
         moveSquare(square, topOffset, leftOffset) {
             let newTop = this.getPosition(square, 'top') + topOffset;
             square.style.top = newTop + "px";
@@ -277,7 +431,7 @@ export default {
             square.style.left =  newLeft + "px";
         },
 
-        // rota la figura
+        // Rota el tetromino
         rotateTet() {
             switch (this.tetType) {
                 case 'I':
@@ -446,8 +600,9 @@ export default {
             }
         },
 
-        // pone un tetromino en una de las 2 pantallas
+        // Pone un tetromino en una de las 2 pantallas
         putTetromino(location) {
+            // se definen los estilos para los divs cuadrados
             let basicStyle = "display: inline-block; width: 40px; height: 40px; position: absolute;"
 
             let cyanSquareStyle = basicStyle + "background: cyan;";
@@ -458,156 +613,129 @@ export default {
             let lawnGreenSquareStyle = basicStyle + "background: lawnGreen;";
             let redSquareStyle = basicStyle + "background: red;";
 
-
             let screen = document.querySelector("#" + location);
 
-            let square1 = document.createElement("div");
-            let square2 = document.createElement("div");
-            let square3 = document.createElement("div");
-            let square4 = document.createElement("div");
+            // se cren los cuadrado del tetromino
+            let squareArray = [document.createElement("div"),
+                document.createElement("div"),
+                document.createElement("div"),
+                document.createElement("div")];
 
-            let squareArray = [square1, square2, square3, square4];
-            
-            // this.getRandomInt(1, 7)
-            switch (2) {
+            let left, top = 40;
+
+            // se verifica la pantalla para decidir que hacer
+            let number;
+            if (location === 'screen') {
+                left = 120;
+                this.currentTet = squareArray;
+                this.tetOrientation = 1;                
+                number = this.nextTet;
+            } else if (location === 'screen2') {
+                left = 0;
+                number = this.getRandomInt(1, 7);
+                this.nextTet = number;
+            }
+
+            // se decide como hay que acomodar cada cuadrado
+            switch (number) {
                 case 1: // I
-                    this.tetType = 'I';
+                    if (location === 'screen') this.tetType = 'I';
 
-                    let left = 120;
                     squareArray.forEach(square => {
                         square.style.cssText = cyanSquareStyle;
-                        square.style.top = "40px";
-                        square.style.left = left + "px";
-                        left += 40;
                     });
 
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 'px'; 
+                    squareArray[1].style.top = top + 'px'; squareArray[1].style.left = left + 40 + 'px';
+                    squareArray[2].style.top = top + 'px'; squareArray[2].style.left = left + 80 +'px';
+                    squareArray[3].style.top = top + 'px'; squareArray[3].style.left = left + 120 + 'px';
                     break;
                 case 2: // O
-                    this.tetType = 'O';
+                    if (location === 'screen') this.tetType = 'O';
 
                     squareArray.forEach(square => {
                         square.style.cssText = yellowSquareStyle;
                     });
 
-                    squareArray[0].style.top = '40px'; squareArray[0].style.left = '160px'; 
-                    squareArray[1].style.top = '40px'; squareArray[1].style.left = '200px';
-                    squareArray[2].style.top = '80px'; squareArray[2].style.left = '160px';
-                    squareArray[3].style.top = '80px'; squareArray[3].style.left = '200px';
-
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 40 + 'px'; 
+                    squareArray[1].style.top = top + 'px'; squareArray[1].style.left = left + 80 + 'px';
+                    squareArray[2].style.top = top + 40 + 'px'; squareArray[2].style.left = left + 40 + 'px';
+                    squareArray[3].style.top = top + 40 + 'px'; squareArray[3].style.left = left + 80 + 'px';
                     break;
                 case 3: // T
-                    this.tetType = 'T';
+                    if (location === 'screen') this.tetType = 'T';
 
                     squareArray.forEach(square => {
                         square.style.cssText = magentaSquareStyle;
                     });
 
-                    squareArray[0].style.top = '40px'; squareArray[0].style.left = '120px'; 
-                    squareArray[1].style.top = '40px'; squareArray[1].style.left = '160px';
-                    squareArray[2].style.top = '40px'; squareArray[2].style.left = '200px';
-                    squareArray[3].style.top = '80px'; squareArray[3].style.left = '160px';
-
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 'px'; 
+                    squareArray[1].style.top = top + 'px'; squareArray[1].style.left = left + 40 + 'px';
+                    squareArray[2].style.top = top + 'px'; squareArray[2].style.left = left + 80 + 'px';
+                    squareArray[3].style.top = top + 40 + 'px'; squareArray[3].style.left = left + 40 + 'px';
                     break;
                 case 4: // J
-                    this.tetType = 'J';
+                    if (location === 'screen') this.tetType = 'J';
 
                     squareArray.forEach(square => {
                         square.style.cssText = blueSquareStyle;
                     });
 
-                    squareArray[0].style.top = '40px'; squareArray[0].style.left = '120px'; 
-                    squareArray[1].style.top = '40px'; squareArray[1].style.left = '160px';
-                    squareArray[2].style.top = '40px'; squareArray[2].style.left = '200px';
-                    squareArray[3].style.top = '80px'; squareArray[3].style.left = '200px';
-
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 'px'; 
+                    squareArray[1].style.top = top + 'px'; squareArray[1].style.left = left + 40 + 'px';
+                    squareArray[2].style.top = top + 'px'; squareArray[2].style.left = left + 80 + 'px';
+                    squareArray[3].style.top = top + 40 + 'px'; squareArray[3].style.left = left + 80 + 'px';
                     break;
                 case 5: // L
-                    this.tetType = 'L';
+                    if (location === 'screen') this.tetType = 'L';
 
                     squareArray.forEach(square => {
                         square.style.cssText = orangeSquareStyle;
                     });
-                    squareArray[0].style.top = '40px'; squareArray[0].style.left = '200px'; 
-                    squareArray[1].style.top = '80px'; squareArray[1].style.left = '120px';
-                    squareArray[2].style.top = '80px'; squareArray[2].style.left = '160px';
-                    squareArray[3].style.top = '80px'; squareArray[3].style.left = '200px';
 
-
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 80 + 'px'; 
+                    squareArray[1].style.top = top + 40 + 'px'; squareArray[1].style.left = left + 'px';
+                    squareArray[2].style.top = top + 40 + 'px'; squareArray[2].style.left = left + 40 + 'px';
+                    squareArray[3].style.top = top + 40 + 'px'; squareArray[3].style.left = left + 80 + 'px';
                     break;
                 case 6: // S
-                    this.tetType = 'S';
+                    if (location === 'screen') this.tetType = 'S';
 
                     squareArray.forEach(square => {
                         square.style.cssText = lawnGreenSquareStyle;
                     });
 
-                    squareArray[0].style.top = '80px'; squareArray[0].style.left = '120px'; 
-                    squareArray[1].style.top = '80px'; squareArray[1].style.left = '160px';
-                    squareArray[2].style.top = '40px'; squareArray[2].style.left = '160px';
-                    squareArray[3].style.top = '40px'; squareArray[3].style.left = '200px';
-
+                    squareArray[0].style.top = top + 40 + 'px'; squareArray[0].style.left = left + 'px'; 
+                    squareArray[1].style.top = top + 40 + 'px'; squareArray[1].style.left = left + 40 + 'px';
+                    squareArray[2].style.top = top + 'px'; squareArray[2].style.left = left + 40 + 'px';
+                    squareArray[3].style.top = top + 'px'; squareArray[3].style.left = left + 80 + 'px';
                     break;
                 case 7: // Z
-                    this.tetType = 'Z';
+                    if (location === 'screen') this.tetType = 'Z';
 
                     squareArray.forEach(square => {
                         square.style.cssText = redSquareStyle;
                     });
 
-                    squareArray[0].style.top = '40px'; squareArray[0].style.left = '120px'; 
-                    squareArray[1].style.top = '40px'; squareArray[1].style.left = '160px';
-                    squareArray[2].style.top = '80px'; squareArray[2].style.left = '160px';
-                    squareArray[3].style.top = '80px'; squareArray[3].style.left = '200px';
-
+                    squareArray[0].style.top = top + 'px'; squareArray[0].style.left = left + 'px'; 
+                    squareArray[1].style.top = top + 'px'; squareArray[1].style.left = left + 40 + 'px';
+                    squareArray[2].style.top = top + 40 + 'px'; squareArray[2].style.left = left + 40 + 'px';
+                    squareArray[3].style.top = top + 40 + 'px'; squareArray[3].style.left = left + 80 + 'px';
                     break;
             }
 
+            // coloca el tetromino en la pantalla correspondiente
             squareArray.forEach(square => {
                 screen.appendChild(square);
             });
-
-            this.tetOrientation = 1;
-
-            this.currentTet = squareArray;
         },
 
-        // obtiene un numero aleatorio entre min (inclusivo) y max (inclusivo)
+        // Obtiene un numero aleatorio entre min (inclusivo) y max (inclusivo)
         getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-
-        // metodo para imprimir una matriz cuando se necesite
-        printMatrix(matrix, rows, cols) {
-            for (let r = 0; r < rows; r++) {
-                let row = "";
-                for (let c = 0; c < cols; c++) {
-                    row += r + "," + c + " " + (matrix[r][c]? " " : "*")  + "\t";
-                }
-                console.log(row);
-            } 
-        }
-    },
-    mounted() {
-        window.addEventListener('keydown', (event) => {
-            let direction;
-            switch (event.key) {
-                case 'w': // arriba
-                    this.rotateTet();
-                    break;
-                case 'a': // izquierda
-                    if (this.tetHaveSpace('left')) this.moveTet('left');
-                    break;
-                case 's': // abajo
-                    if (this.tetHaveSpace('down')) this.moveTet('down');
-                    break;
-                case 'd': // derecha
-                    if (this.tetHaveSpace('right')) this.moveTet('right');
-                    break;
-            }
-        }, false); 
-
     }
 }
 </script>

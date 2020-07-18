@@ -6,7 +6,7 @@
             {{ game.name }}
         </h1>
 
-        <tetris-game></tetris-game>
+        <tetris-game :user-id="userId"></tetris-game>
 
         <h3 class="mt-3">Acerca del juego</h3>
         <!-- Para interpretar saltos de linea \r\n -->
@@ -17,24 +17,29 @@
 
 </template>
 <script>
-import { apiGamesURLS } from '../../constants.js'
+import { apiGamesURLS, apiScoresURLS, gameIds } from '../../constants.js'
 
 // Componente importado de manera local
-import TetrisGame from './TetrisGame.vue'
+import TetrisGame from './TetrisGame.vue';
 
 export default {
     components: {
-        'tetris-game': TetrisGame
+        'tetris-game': TetrisGame,
+    },
+    props: {
+        userId: {
+            required: true,
+        },
     },
     data() {
         return {
             // variable con el id del juego tetris
-            gameId: 4,
+            gameId: gameIds['TETRIS'],
             // variable que contendra los datos del juego
             game: {
                 name: null,
                 description: null
-            }
+            },
         }
     },
     created() {

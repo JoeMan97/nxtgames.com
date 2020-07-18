@@ -1,6 +1,6 @@
 <template>
 
-    <component v-bind:is="game"></component>
+    <component :is="game" :user-id="userId"></component>
     
 </template>
 
@@ -14,7 +14,9 @@ export default {
     props: {
         // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
         game: {
-            type: String,
+            required: true
+        },
+        userId: {
             required: true
         }
     },

@@ -78,7 +78,7 @@ import { cutText } from '../../functions.js'
 export default {
     props: {
         gameRoutes: {
-            required: true,Array
+            required: true, Array
         }
     },
     data() {
