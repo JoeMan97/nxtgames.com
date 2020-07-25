@@ -2273,32 +2273,72 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Snake_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Snake.vue */ "./resources/js/components/games/Snake.vue");
 /* harmony import */ var _Tetris_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tetris.vue */ "./resources/js/components/games/Tetris.vue");
 /* harmony import */ var _TheGameOfLife_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TheGameOfLife.vue */ "./resources/js/components/games/TheGameOfLife.vue");
+/* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../constants.js */ "./resources/js/constants.js");
 //
 //
 //
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
-    game: {
-      required: true
-    },
-    userId: {
-      required: true
-    }
-  },
   // componentes que utiliza el elemento component
   components: {
     'connect-4': _Connect4_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     'snake': _Snake_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     'tetris': _Tetris_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     'the-game-of-life': _TheGameOfLife_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  props: {
+    // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
+    gameName: {
+      required: true
+    },
+    userId: {
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      // variable que contendra los datos del juego
+      game: {
+        name: null,
+        description: null
+      }
+    };
+  },
+  created: function created() {
+    var _this = this;
+
+    // Obtiene los datos del juego
+    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_4__["apiGamesURLS"]['GET_GAME'] + _constants_js__WEBPACK_IMPORTED_MODULE_4__["gameIds"][this.toUpperCase(this.gameName)]).then(function (response) {
+      return _this.game = response.data;
+    })["catch"](function (errors) {
+      console.log(errors);
+    });
+  },
+  methods: {
+    toUpperCase: function toUpperCase(name) {
+      return name.toUpperCase();
+    }
   }
 });
 
@@ -2331,72 +2371,6 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/Tetris.vue?vue&type=script&lang=js& ***!
   \***********************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants.js */ "./resources/js/constants.js");
-/* harmony import */ var _TetrisGame_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TetrisGame.vue */ "./resources/js/components/games/TetrisGame.vue");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
- // Componente importado de manera local
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  components: {
-    'tetris-game': _TetrisGame_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
-  },
-  props: {
-    userId: {
-      required: true
-    }
-  },
-  data: function data() {
-    return {
-      // variable con el id del juego tetris
-      gameId: _constants_js__WEBPACK_IMPORTED_MODULE_0__["gameIds"]['TETRIS'],
-      // variable que contendra los datos del juego
-      game: {
-        name: null,
-        description: null
-      }
-    };
-  },
-  created: function created() {
-    var _this = this;
-
-    // Obtiene los datos del juego
-    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_0__["apiGamesURLS"]['GET_GAME'] + this.gameId).then(function (response) {
-      return _this.game = response.data;
-    })["catch"](function (errors) {
-      console.log(errors);
-    });
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -40923,7 +40897,32 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(_vm.game, { tag: "component", attrs: { "user-id": _vm.userId } })
+  return _c(
+    "div",
+    [
+      _c("h1", [_vm._v("\n        " + _vm._s(_vm.game.name) + "\n    ")]),
+      _vm._v(" "),
+      _c(_vm.gameName, { tag: "component", attrs: { "user-id": _vm.userId } }),
+      _vm._v(" "),
+      _c("h3", { staticClass: "mt-3" }, [_vm._v("Acerca del juego")]),
+      _vm._v(" "),
+      _c("p", { staticClass: "text-justify" }, [
+        _c(
+          "span",
+          {
+            staticClass: "text-justify",
+            staticStyle: { "white-space": "pre-line" }
+          },
+          [
+            _vm._v(
+              "\n            " + _vm._s(_vm.game.description) + "\n        "
+            )
+          ]
+        )
+      ])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -40960,51 +40959,6 @@ render._withStripped = true
 /*!***************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/Tetris.vue?vue&type=template&id=7c164592& ***!
   \***************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("h1", [_vm._v("\n        " + _vm._s(_vm.game.name) + "\n    ")]),
-      _vm._v(" "),
-      _c("tetris-game", { attrs: { "user-id": _vm.userId } }),
-      _vm._v(" "),
-      _c("h3", { staticClass: "mt-3" }, [_vm._v("Acerca del juego")]),
-      _vm._v(" "),
-      _c("p", { staticClass: "text-justify" }, [
-        _c(
-          "span",
-          {
-            staticClass: "text-justify",
-            staticStyle: { "white-space": "pre-line" }
-          },
-          [_vm._v(_vm._s(_vm.game.description))]
-        )
-      ])
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&":
-/*!*******************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4& ***!
-  \*******************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -54440,75 +54394,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tetris_vue_vue_type_template_id_7c164592___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tetris_vue_vue_type_template_id_7c164592___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/games/TetrisGame.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/games/TetrisGame.vue ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TetrisGame.vue?vue&type=template&id=15ff9fa4& */ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&");
-/* harmony import */ var _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TetrisGame.vue?vue&type=script&lang=js& */ "./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/games/TetrisGame.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./TetrisGame.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&":
-/*!*************************************************************************************!*\
-  !*** ./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4& ***!
-  \*************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./TetrisGame.vue?vue&type=template&id=15ff9fa4& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/games/TetrisGame.vue?vue&type=template&id=15ff9fa4&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TetrisGame_vue_vue_type_template_id_15ff9fa4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
