@@ -2273,6 +2273,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Snake_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Snake.vue */ "./resources/js/components/games/Snake.vue");
 /* harmony import */ var _Tetris_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tetris.vue */ "./resources/js/components/games/Tetris.vue");
 /* harmony import */ var _TheGameOfLife_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TheGameOfLife.vue */ "./resources/js/components/games/TheGameOfLife.vue");
+/* harmony import */ var _constants_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../constants.js */ "./resources/js/constants.js");
 //
 //
 //
@@ -2291,26 +2292,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: {
-    // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
-    game: {
-      required: true
-    },
-    userId: {
-      required: true
-    }
-  },
   // componentes que utiliza el elemento component
   components: {
     'connect-4': _Connect4_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     'snake': _Snake_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
     'tetris': _Tetris_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     'the-game-of-life': _TheGameOfLife_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  props: {
+    // prop que envia la vista selected-game.blade para mostrar el componente correspondiente
+    gameName: {
+      required: true
+    },
+    userId: {
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      // variable que contendra los datos del juego
+      game: {
+        name: null,
+        description: null
+      }
+    };
+  },
+  created: function created() {
+    var _this = this;
+
+    // Obtiene los datos del juego
+    axios.get(_constants_js__WEBPACK_IMPORTED_MODULE_4__["apiGamesURLS"]['GET_GAME'] + _constants_js__WEBPACK_IMPORTED_MODULE_4__["gameIds"][this.toUpperCase(this.gameName)]).then(function (response) {
+      return _this.game = response.data;
+    })["catch"](function (errors) {
+      console.log(errors);
+    });
+  },
+  methods: {
+    toUpperCase: function toUpperCase(name) {
+      return name.toUpperCase();
+    }
   }
 });
 
@@ -40874,7 +40902,7 @@ var render = function() {
     [
       _c("h1", [_vm._v("\n        " + _vm._s(_vm.game.name) + "\n    ")]),
       _vm._v(" "),
-      _c(_vm.game, { tag: "component", attrs: { "user-id": _vm.userId } }),
+      _c(_vm.gameName, { tag: "component", attrs: { "user-id": _vm.userId } }),
       _vm._v(" "),
       _c("h3", { staticClass: "mt-3" }, [_vm._v("Acerca del juego")]),
       _vm._v(" "),
@@ -40885,7 +40913,11 @@ var render = function() {
             staticClass: "text-justify",
             staticStyle: { "white-space": "pre-line" }
           },
-          [_vm._v(_vm._s(_vm.game.description))]
+          [
+            _vm._v(
+              "\n            " + _vm._s(_vm.game.description) + "\n        "
+            )
+          ]
         )
       ])
     ],
