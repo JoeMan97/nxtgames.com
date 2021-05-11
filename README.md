@@ -6,7 +6,7 @@ Será un sitio web donde principalmente se podrán jugar algunos juegos clásico
 
 El propósito de desarrollar este sitio es el de zanjar la mayor cantidad de conocimientos recién adquiridos sobre el framework Vue, el framework Bootstrap y el framework Laravel. También el de repasar conocimientos previos de desarrollo web.
 
-###Instalar XAMPP, Composer, Laravel y NPM.
+### Instalar XAMPP, Composer, Laravel y NPM.
 - Instale XAMPP. Mas detalles en https://laravel.com/docs/7.x/installation
 - Baje el instalador de Composser, el cual se encuentra en https://getcomposer.org/doc/00-intro.md e instale Composser.
 - Instale Laravel con el comando:
@@ -14,7 +14,7 @@ El propósito de desarrollar este sitio es el de zanjar la mayor cantidad de con
 - Y por último, descargue NPM de https://nodejs.org/es/ y luego ejecute el comando:
     - npm install
     
- ###Montar el proyecto:
+ ### Montar el proyecto:
 - Descargue este proyecto.
 - Valla a la linea 11 del archivo composer.json y agregue la version que se tenga de php instalada en la PC. (ej. En "php": "^7.2.5|8.0.3", agregue "|8.0.3").
 - Ejecute los siguientes 5 comandos en la carpeta raíz del proyecto:
