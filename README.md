@@ -6,14 +6,27 @@ Será un sitio web donde principalmente se podrán jugar algunos juegos clásico
 
 El propósito de desarrollar este sitio es el de zanjar la mayor cantidad de conocimientos recién adquiridos sobre el framework Vue, el framework Bootstrap y el framework Laravel. También el de repasar conocimientos previos de desarrollo web.
 
-Como montar el proyecto:
-
-- Es necesario tener instalado un servidor como XAMPP, para cumplir con los requisitos de Laravel. Mas detalles en https://laravel.com/docs/7.x/installation
-Tener el administrador de dependencias Composer. El instalador se encuentra en https://getcomposer.org/doc/00-intro.md
-- Teniendo Composer instalado, ejecutar el comando composer global require laravel/installer
-- Cree una base de datos llamada nxtgames con el formato utf8_unicode_ci.
+Instalar XAMPP, Composer, Laravel y NPM.
+- Instale XAMPP. Mas detalles en https://laravel.com/docs/7.x/installation
+- Baje el instalador de Composser, el cual se encuentra en https://getcomposer.org/doc/00-intro.md e instale Composser.
+- Instale Laravel con el comando:
+    - composer global require laravel/installer
+- Y por último, descargue NPM de https://nodejs.org/es/ y luego ejecute el comando:
+    - npm install
+    
+ Montar el proyecto:
 - Descargue este proyecto.
-- Vaya a la dirección del proyecto en la terminal del sistema operativo y ejecute el comando php artisan migrate para crear las tablas en la base de datos. Y finalmente ejecute el comando php artisan serve
-- Vaya a un navegador y entre en la direccion proporcionada por la terminal, no sin antes haber iniciado su servidor de PHP y MySQL.
-
-Nota: No estoy seguro de si para montar el proyecto es necesario tener el administrador de dependencias NPM. De ser así, instale node.js https://nodejs.org/es/ y ejecute el comando npm install en la terminal del sistema operativo, en la dirección del proyecto.
+- Valla a la linea 11 del archivo composer.json y agregue la version que se tenga de php instalada en la PC. (ej. En "php": "^7.2.5|8.0.3", agregue "|8.0.3").
+- Ejecute los siguientes 5 comandos en la carpeta raíz del proyecto:
+    - composer update
+    - composer install
+    - cp .env.example .env
+    - php artisan key:generate
+    - chmod 777 -R  storage
+- En el archivo .env cambie el nombre de la app y el nombre de la base de datos a "api_rest".
+- Cree una base de datos llamada api_rest_bd con el formato utf8_unicode_ci.
+- Ejecute el comando:
+    - php artisan migrate
+- Y finalmente ejecute el comando
+    - php artisan serve
+- Vaya a un navegador y entre en la dirección proporcionada por la terminal.
