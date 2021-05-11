@@ -24,7 +24,7 @@ El propósito de desarrollar este sitio es el de zanjar la mayor cantidad de con
     - php artisan key:generate
     - chmod 777 -R  storage
 - En el archivo .env cambie el nombre de la app y el nombre de la base de datos a "nxtgames".
-- Cree una base de datos llamada api_rest_bd con el formato utf8_unicode_ci.
+- Cree una base de datos llamada "nxtgames" con el formato utf8_unicode_ci.
 - Ejecute el comando:
     - php artisan migrate
 - Y finalmente ejecute el comando
