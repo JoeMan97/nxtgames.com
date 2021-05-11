@@ -23,7 +23,7 @@ El propósito de desarrollar este sitio es el de zanjar la mayor cantidad de con
     - cp .env.example .env
     - php artisan key:generate
     - chmod 777 -R  storage
-- En el archivo .env cambie el nombre de la app y el nombre de la base de datos a "api_rest".
+- En el archivo .env cambie el nombre de la app y el nombre de la base de datos a "nextgames".
 - Cree una base de datos llamada api_rest_bd con el formato utf8_unicode_ci.
 - Ejecute el comando:
     - php artisan migrate
